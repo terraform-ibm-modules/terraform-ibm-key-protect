@@ -1,0 +1,190 @@
+{
+  "path": ".",
+  "variables": {
+    "key_protect_name": {
+      "name": "key_protect_name",
+      "type": "string",
+      "description": "Name of the Key Protect instance",
+      "required": true,
+      "source": [
+        "ibm_resource_instance.key_protect_instance.name"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 15
+      }
+    },
+    "metrics_enabled": {
+      "name": "metrics_enabled",
+      "type": "bool",
+      "description": "Set as true to enable metrics on the Key Protect instance",
+      "default": true,
+      "source": [
+        "restapi_object.enable_metrics.count"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 48
+      }
+    },
+    "plan": {
+      "name": "plan",
+      "type": "string",
+      "description": "Plan for the Key Protect instance, currently only 'tiered-pricing' is supported",
+      "default": "tiered-pricing",
+      "required": true,
+      "source": [
+        "ibm_resource_instance.key_protect_instance.plan"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 37
+      }
+    },
+    "region": {
+      "name": "region",
+      "type": "string",
+      "description": "Region where resources are created",
+      "required": true,
+      "source": [
+        "ibm_resource_instance.key_protect_instance.location",
+        "restapi_object.enable_metrics.create_path",
+        "restapi_object.enable_metrics.destroy_path",
+        "restapi_object.enable_metrics.path",
+        "restapi_object.enable_metrics.read_path",
+        "restapi_object.enable_metrics.update_path"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 10
+      },
+      "cloud_data_type": "region",
+      "immutable": true
+    },
+    "resource_group_id": {
+      "name": "resource_group_id",
+      "type": "string",
+      "description": "Resource Group ID where the Key Protect instance is created",
+      "required": true,
+      "source": [
+        "ibm_resource_instance.key_protect_instance.resource_group_id"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 5
+      },
+      "cloud_data_type": "resource_group",
+      "immutable": true,
+      "computed": true,
+      "cloud_data_range": [
+        "resolved_to:id"
+      ]
+    },
+    "service_endpoints": {
+      "name": "service_endpoints",
+      "type": "string",
+      "description": "Sets the endpoint of the Key Protect instance, valid values are 'public', 'private', or 'public-and-private'",
+      "default": "public-and-private",
+      "source": [
+        "ibm_resource_instance.key_protect_instance.service_endpoints"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 26
+      },
+      "computed": true
+    },
+    "tags": {
+      "name": "tags",
+      "type": "list(string)",
+      "description": "List of tags associated with the Key Protect instance",
+      "default": [],
+      "source": [
+        "ibm_resource_instance.key_protect_instance.tags"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 20
+      },
+      "min_length": 1,
+      "max_length": 128,
+      "matches": "^[A-Za-z0-9:_ .-]+$",
+      "computed": true,
+      "elem": {
+        "type": "TypeString"
+      }
+    }
+  },
+  "outputs": {
+    "key_protect_guid": {
+      "name": "key_protect_guid",
+      "description": "GUID of the Key Protect instance",
+      "value": "ibm_resource_instance.key_protect_instance.guid",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 5
+      }
+    }
+  },
+  "required_core": [
+    "\u003e= 1.0.0"
+  ],
+  "required_providers": {
+    "ibm": {
+      "source": "IBM-Cloud/ibm",
+      "version_constraints": [
+        "\u003e= 1.45.0"
+      ]
+    },
+    "restapi": {
+      "source": "Mastercard/restapi",
+      "version_constraints": [
+        "\u003e=1.17.0"
+      ]
+    }
+  },
+  "managed_resources": {
+    "ibm_resource_instance.key_protect_instance": {
+      "mode": "managed",
+      "type": "ibm_resource_instance",
+      "name": "key_protect_instance",
+      "attributes": {
+        "location": "region",
+        "name": "key_protect_name",
+        "plan": "plan",
+        "resource_group_id": "resource_group_id",
+        "service_endpoints": "service_endpoints",
+        "tags": "tags"
+      },
+      "provider": {
+        "name": "ibm"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 5
+      }
+    },
+    "restapi_object.enable_metrics": {
+      "mode": "managed",
+      "type": "restapi_object",
+      "name": "enable_metrics",
+      "attributes": {
+        "count": "metrics_enabled",
+        "create_path": "region",
+        "destroy_path": "region",
+        "path": "region",
+        "read_path": "region",
+        "update_path": "region"
+      },
+      "provider": {
+        "name": "restapi"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 15
+      }
+    }
+  },
+  "data_resources": {},
+  "module_calls": {}
+}
