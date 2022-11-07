@@ -1,9 +1,9 @@
 # Key Protect module
 [![Stable (Adopted)](https://img.shields.io/badge/Status-Stable%20(Adopted)-yellowgreen?style=plastic)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
-[![Build Status](https://github.com/terraform-ibm-modules/terraform-ibm-kms/actions/workflows/ci.yml/badge.svg)](https://github.com/terraform-ibm-modules/terraform-ibm-kms/actions/workflows/ci.yml)
+[![Build Status](https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/actions/workflows/ci.yml/badge.svg)](https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/actions/workflows/ci.yml)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-kms?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-kms/releases/latest)
+[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-key-protect?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/releases/latest)
 
 This module creates a Key Protect instance, for more information please see [the documentation](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about).
 
@@ -16,7 +16,7 @@ This module creates a Key Protect instance, for more information please see [the
 
 # Replace "main" with a GIT release version to lock into a specific release
 module "key_protect_module" {
-  source            = "git::https://github.com:terraform-ibm-modules/terraform-ibm-kms.git?ref=main"
+  source            = "git::https://github.com:terraform-ibm-modules/terraform-ibm-key-protect.git?ref=main"
   key_protect_name  = var.key_protect_name
   resource_group_id = module.resource_group.resource_group_id
   region            = var.region
