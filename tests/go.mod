@@ -1,4 +1,4 @@
-module github.com/terraform-ibm-modules/terraform-ibm-kms
+module github.com/terraform-ibm-modules/terraform-ibm-key-protect
 
 go 1.19
 
