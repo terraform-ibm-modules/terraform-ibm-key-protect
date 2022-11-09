@@ -16,3 +16,8 @@ output "key_protect_guid" {
   description = "GUID of the Key Protect instance"
   value       = module.key_protect_module.key_protect_guid
 }
+
+output "key_protect_name" {
+  description = "Name of the Key Protect instance"
+  value       = module.key_protect_module.key_protect_name
+}
