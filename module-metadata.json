@@ -124,6 +124,15 @@
         "filename": "outputs.tf",
         "line": 5
       }
+    },
+    "key_protect_name": {
+      "name": "key_protect_name",
+      "description": "Name of the Key Protect instance",
+      "value": "ibm_resource_instance.key_protect_instance.name",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 10
+      }
     }
   },
   "required_core": [
