@@ -123,7 +123,8 @@
       "pos": {
         "filename": "outputs.tf",
         "line": 5
-      }
+      },
+      "type": "TypeString"
     },
     "key_protect_name": {
       "name": "key_protect_name",
@@ -132,7 +133,8 @@
       "pos": {
         "filename": "outputs.tf",
         "line": 10
-      }
+      },
+      "type": "TypeString"
     }
   },
   "required_core": [
