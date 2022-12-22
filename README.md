@@ -4,35 +4,47 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-key-protect?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/releases/latest)
+[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 
-This module creates a Key Protect instance, for more information please see [the documentation](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about).
+This module supports:
+- Creating a [Key Protect instance](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about)
+- Enabling [monitoring metrics](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
+
+There is currently an [enhancement request](https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4256) open with the IBM terraform provider to support enabling metrics. Until then, this module uses the restapi provider to enable metrics.
 
 ## Usage
 
 ```hcl
-##############################################################################
-# Key Protect
-##############################################################################
+provider "ibm" {
+  ibmcloud_api_key = "XXXXXXXXXX"
+  region           = "us-south"
+}
 
-# Replace "main" with a GIT release version to lock into a specific release
+# Retrieve IAM access token (required for restapi provider)
+data "ibm_iam_auth_token" "token_data" {
+}
+
+provider "restapi" {
+  uri                   = "https:"
+  write_returns_object  = false
+  create_returns_object = false
+  debug                 = false
+  headers = {
+    Authorization    = data.ibm_iam_auth_token.token_data.iam_access_token
+    Bluemix-Instance = module.key_protect_module.key_protect_guid
+    Content-Type     = "application/vnd.ibm.kms.policy+json"
+  }
+}
+
 module "key_protect_module" {
+  # Replace "main" with a GIT release version to lock into a specific release
   source            = "git::https://github.com:terraform-ibm-modules/terraform-ibm-key-protect.git?ref=main"
-  key_protect_name  = var.key_protect_name
-  resource_group_id = module.resource_group.resource_group_id
-  region            = var.region
-  tags              = var.tags
-  private_endpoint  = var.private_endpoint
+  key_protect_name  = "my-key-protect-instance"
+  resource_group_id = "xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX"
+  region            = "us-south"
 }
 ```
 ## Required IAM access policies
-
-<!-- PERMISSIONS REQUIRED TO RUN MODULE
-If this module requires permissions, uncomment the following block and update
-the sample permissions, following the format.
-Replace the sample Account and IBM Cloud service names and roles with the
-information in the console at
-Manage > Access (IAM) > Access groups > Access policies.
--->
 
 - Account Management
     - **Resource Group** service
@@ -40,13 +52,8 @@ Manage > Access (IAM) > Access groups > Access policies.
 - IAM Services
     - **Key Protect** service
         - `Editor` platform access
+        - `Manager` platform access (required to enable metrics)
 
-<!-- NO PERMISSIONS FOR MODULE
-If no permissions are required for the module, uncomment the following
-statement instead the previous block.
--->
-
-<!-- No permissions are needed to run this module.-->
 <!-- BEGIN EXAMPLES HOOK -->
 ## Examples
 
@@ -60,7 +67,7 @@ statement instead the previous block.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.48.0 |
-| <a name="requirement_restapi"></a> [restapi](#requirement\_restapi) | >=1.18.0 |
+| <a name="requirement_restapi"></a> [restapi](#requirement\_restapi) | >= 1.18.0 |
 
 ## Modules
 
@@ -77,19 +84,20 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_key_protect_name"></a> [key\_protect\_name](#input\_key\_protect\_name) | Name of the Key Protect instance | `string` | n/a | yes |
-| <a name="input_metrics_enabled"></a> [metrics\_enabled](#input\_metrics\_enabled) | Set as true to enable metrics on the Key Protect instance | `bool` | `true` | no |
-| <a name="input_plan"></a> [plan](#input\_plan) | Plan for the Key Protect instance, currently only 'tiered-pricing' is supported | `string` | `"tiered-pricing"` | no |
-| <a name="input_region"></a> [region](#input\_region) | Region where resources are created | `string` | n/a | yes |
-| <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | Resource Group ID where the Key Protect instance is created | `string` | n/a | yes |
-| <a name="input_service_endpoints"></a> [service\_endpoints](#input\_service\_endpoints) | Sets the endpoint of the Key Protect instance, valid values are 'public', 'private', or 'public-and-private' | `string` | `"public-and-private"` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | List of tags associated with the Key Protect instance | `list(string)` | `[]` | no |
+| <a name="input_key_protect_name"></a> [key\_protect\_name](#input\_key\_protect\_name) | The name to give the Key Protect instance that will be provisioned | `string` | n/a | yes |
+| <a name="input_metrics_enabled"></a> [metrics\_enabled](#input\_metrics\_enabled) | Set to true to enable metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics. | `bool` | `true` | no |
+| <a name="input_plan"></a> [plan](#input\_plan) | Plan for the Key Protect instance. Currently only 'tiered-pricing' is supported | `string` | `"tiered-pricing"` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region where the Key Protect instance will be provisioned | `string` | n/a | yes |
+| <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | Resource Group ID where the Key Protect instance will be provisioned | `string` | n/a | yes |
+| <a name="input_service_endpoints"></a> [service\_endpoints](#input\_service\_endpoints) | Types of the service endpoints to be set for the Key Protect instance. Possible values are 'public', 'private', or 'public-and-private' | `string` | `"public-and-private"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | List of tags to associate with the Key Protect instance | `list(string)` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_key_protect_guid"></a> [key\_protect\_guid](#output\_key\_protect\_guid) | GUID of the Key Protect instance |
+| <a name="output_key_protect_id"></a> [key\_protect\_id](#output\_key\_protect\_id) | ID of the Key Protect instance |
 | <a name="output_key_protect_name"></a> [key\_protect\_name](#output\_key\_protect\_name) | Name of the Key Protect instance |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 <!-- BEGIN CONTRIBUTING HOOK -->

@@ -4,7 +4,7 @@
     "key_protect_name": {
       "name": "key_protect_name",
       "type": "string",
-      "description": "Name of the Key Protect instance",
+      "description": "The name to give the Key Protect instance that will be provisioned",
       "required": true,
       "source": [
         "ibm_resource_instance.key_protect_instance.name"
@@ -17,7 +17,7 @@
     "metrics_enabled": {
       "name": "metrics_enabled",
       "type": "bool",
-      "description": "Set as true to enable metrics on the Key Protect instance",
+      "description": "Set to true to enable metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics.",
       "default": true,
       "source": [
         "restapi_object.enable_metrics.count"
@@ -30,7 +30,7 @@
     "plan": {
       "name": "plan",
       "type": "string",
-      "description": "Plan for the Key Protect instance, currently only 'tiered-pricing' is supported",
+      "description": "Plan for the Key Protect instance. Currently only 'tiered-pricing' is supported",
       "default": "tiered-pricing",
       "required": true,
       "source": [
@@ -44,7 +44,7 @@
     "region": {
       "name": "region",
       "type": "string",
-      "description": "Region where resources are created",
+      "description": "Region where the Key Protect instance will be provisioned",
       "required": true,
       "source": [
         "ibm_resource_instance.key_protect_instance.location",
@@ -64,7 +64,7 @@
     "resource_group_id": {
       "name": "resource_group_id",
       "type": "string",
-      "description": "Resource Group ID where the Key Protect instance is created",
+      "description": "Resource Group ID where the Key Protect instance will be provisioned",
       "required": true,
       "source": [
         "ibm_resource_instance.key_protect_instance.resource_group_id"
@@ -83,7 +83,7 @@
     "service_endpoints": {
       "name": "service_endpoints",
       "type": "string",
-      "description": "Sets the endpoint of the Key Protect instance, valid values are 'public', 'private', or 'public-and-private'",
+      "description": "Types of the service endpoints to be set for the Key Protect instance. Possible values are 'public', 'private', or 'public-and-private'",
       "default": "public-and-private",
       "source": [
         "ibm_resource_instance.key_protect_instance.service_endpoints"
@@ -97,7 +97,7 @@
     "tags": {
       "name": "tags",
       "type": "list(string)",
-      "description": "List of tags associated with the Key Protect instance",
+      "description": "List of tags to associate with the Key Protect instance",
       "default": [],
       "source": [
         "ibm_resource_instance.key_protect_instance.tags"
@@ -126,13 +126,22 @@
       },
       "type": "TypeString"
     },
+    "key_protect_id": {
+      "name": "key_protect_id",
+      "description": "ID of the Key Protect instance",
+      "value": "ibm_resource_instance.key_protect_instance.id",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 10
+      }
+    },
     "key_protect_name": {
       "name": "key_protect_name",
       "description": "Name of the Key Protect instance",
       "value": "ibm_resource_instance.key_protect_instance.name",
       "pos": {
         "filename": "outputs.tf",
-        "line": 10
+        "line": 15
       },
       "type": "TypeString"
     }
@@ -150,7 +159,7 @@
     "restapi": {
       "source": "Mastercard/restapi",
       "version_constraints": [
-        "\u003e=1.18.0"
+        "\u003e= 1.18.0"
       ]
     }
   },
@@ -192,7 +201,7 @@
       },
       "pos": {
         "filename": "main.tf",
-        "line": 15
+        "line": 20
       }
     }
   },

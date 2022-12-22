@@ -7,6 +7,11 @@ output "key_protect_guid" {
   description = "GUID of the Key Protect instance"
 }
 
+output "key_protect_id" {
+  value       = ibm_resource_instance.key_protect_instance.id
+  description = "ID of the Key Protect instance"
+}
+
 output "key_protect_name" {
   value       = ibm_resource_instance.key_protect_instance.name
   description = "Name of the Key Protect instance"
