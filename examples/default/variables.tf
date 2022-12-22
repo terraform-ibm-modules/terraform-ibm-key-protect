@@ -13,12 +13,12 @@ variable "region" {
 variable "prefix" {
   type        = string
   description = "Prefix to append to all resources created by this example"
-  default     = "test"
+  default     = "example"
 }
 
 variable "resource_group" {
   type        = string
-  description = "An existing resource group name to use for this example, if unset a new resource group will be created"
+  description = "An existing resource group name to use for this example. If unset a new resource group will be created"
   default     = null
 }
 

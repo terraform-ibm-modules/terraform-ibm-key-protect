@@ -1,5 +1,5 @@
 ##############################################################################
-# Key Protect module
+# Create Key Protect instance
 ##############################################################################
 
 resource "ibm_resource_instance" "key_protect_instance" {
@@ -11,6 +11,11 @@ resource "ibm_resource_instance" "key_protect_instance" {
   service_endpoints = var.service_endpoints
   tags              = var.tags
 }
+
+
+##############################################################################
+# Enable Metrics
+##############################################################################
 
 resource "restapi_object" "enable_metrics" {
   count          = var.metrics_enabled ? 1 : 0

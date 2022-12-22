@@ -3,6 +3,7 @@ provider "ibm" {
   region           = var.region
 }
 
+# Retrieve IAM access token (required for restapi provider)
 data "ibm_iam_auth_token" "token_data" {
 }
 
