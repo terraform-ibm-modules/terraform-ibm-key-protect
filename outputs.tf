@@ -16,3 +16,8 @@ output "key_protect_name" {
   value       = ibm_resource_instance.key_protect_instance.name
   description = "Name of the Key Protect instance"
 }
+
+output "key_protect_instance_policies" {
+  value       = ibm_kms_instance_policies.key_protect_instance_policies
+  description = "Instance Polices of the Key Protect instance"
+}

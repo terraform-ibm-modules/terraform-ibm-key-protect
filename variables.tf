@@ -45,8 +45,61 @@ variable "plan" {
   }
 }
 
+variable "rotation_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a rotation policy on the instance."
+  default     = true
+}
+
+variable "rotation_interval_month" {
+  type        = number
+  description = "Specifies the key rotation time interval in months. Must be between 1 and 12 inclusive."
+  default     = 1
+
+  validation {
+    condition     = (var.rotation_interval_month >= 1) && (var.rotation_interval_month <= 12)
+    error_message = "The rotation_interval_month must be between 1 and 12 inclusive."
+  }
+}
+
+variable "dual_auth_delete_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a dual authorization policy on the instance. Note: Once the dual authorization policy is set on the instance, it cannot be reverted. An instance with dual authorization policy enabled cannot be destroyed using Terraform."
+  default     = false
+}
+
 variable "metrics_enabled" {
   type        = bool
-  description = "Set to true to enable metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics."
+  description = "If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics."
+  default     = true
+}
+
+variable "key_create_import_access_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a key_create_import_access policy on the instance."
+  default     = true
+}
+
+variable "key_create_import_access_create_root_key" {
+  type        = bool
+  description = "If set to true enables create root key attribute for the instance."
+  default     = true
+}
+
+variable "key_create_import_access_create_standard_key" {
+  type        = bool
+  description = "If set to true enables create standard key attribute for the instance."
+  default     = true
+}
+
+variable "key_create_import_access_import_root_key" {
+  type        = bool
+  description = "If set to true enables import root key attribute for the instance."
+  default     = true
+}
+
+variable "key_create_import_access_import_standard_key" {
+  type        = bool
+  description = "If set to true enables import standard key attribute for the instance."
   default     = true
 }

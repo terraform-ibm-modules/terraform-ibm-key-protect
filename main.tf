@@ -12,22 +12,23 @@ resource "ibm_resource_instance" "key_protect_instance" {
   tags              = var.tags
 }
 
-
-##############################################################################
-# Enable Metrics
-##############################################################################
-
-resource "restapi_object" "enable_metrics" {
-  count          = var.metrics_enabled ? 1 : 0
-  path           = "//${var.region}.kms.cloud.ibm.com/api/v2/instance/policies?policy=metrics"
-  data           = "{\"metadata\": {\"collectionType\": \"application/vnd.ibm.kms.policy+json\", \"collectionTotal\": 1}, \"resources\": [{\"policy_type\": \"metrics\", \"policy_data\": {\"enabled\": true}}]}"
-  create_method  = "PUT"
-  create_path    = "//${var.region}.kms.cloud.ibm.com/api/v2/instance/policies?policy=metrics"
-  update_method  = "PUT"
-  update_path    = "//${var.region}.kms.cloud.ibm.com/api/v2/instance/policies?policy=metrics"
-  destroy_method = "GET"
-  destroy_path   = "//${var.region}.kms.cloud.ibm.com/api/v2/instance/policies?policy=metrics"
-  read_path      = "//${var.region}.kms.cloud.ibm.com/api/v2/instance/policies?policy=metrics"
-  object_id      = ibm_resource_instance.key_protect_instance.guid
-  id_attribute   = ibm_resource_instance.key_protect_instance.guid
+resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
+  instance_id = ibm_resource_instance.key_protect_instance.guid
+  rotation {
+    enabled        = var.rotation_enabled
+    interval_month = var.rotation_interval_month
+  }
+  dual_auth_delete {
+    enabled = var.dual_auth_delete_enabled
+  }
+  metrics {
+    enabled = var.metrics_enabled
+  }
+  key_create_import_access {
+    enabled             = var.key_create_import_access_enabled
+    create_root_key     = var.key_create_import_access_create_root_key
+    create_standard_key = var.key_create_import_access_create_standard_key
+    import_root_key     = var.key_create_import_access_import_root_key
+    import_standard_key = var.key_create_import_access_import_standard_key
+  }
 }

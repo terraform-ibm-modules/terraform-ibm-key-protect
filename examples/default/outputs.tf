@@ -26,3 +26,8 @@ output "key_protect_name" {
   description = "Name of the Key Protect instance"
   value       = module.key_protect_module.key_protect_name
 }
+
+output "key_protect_instance_policies" {
+  description = "Instance policies of the Key Protect instance"
+  value       = module.key_protect_module.key_protect_instance_policies
+}
