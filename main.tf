@@ -26,9 +26,10 @@ resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
   }
   key_create_import_access {
     enabled             = var.key_create_import_access_enabled
-    create_root_key     = var.key_create_import_access_create_root_key
-    create_standard_key = var.key_create_import_access_create_standard_key
-    import_root_key     = var.key_create_import_access_import_root_key
-    import_standard_key = var.key_create_import_access_import_standard_key
+    create_root_key     = var.key_create_import_access_settings.create_root_key
+    create_standard_key = var.key_create_import_access_settings.create_standard_key
+    import_root_key     = var.key_create_import_access_settings.import_root_key
+    import_standard_key = var.key_create_import_access_settings.import_standard_key
+    enforce_token       = var.key_create_import_access_settings.enforce_token
   }
 }

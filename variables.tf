@@ -80,26 +80,14 @@ variable "key_create_import_access_enabled" {
   default     = true
 }
 
-variable "key_create_import_access_create_root_key" {
-  type        = bool
-  description = "If set to true enables create root key attribute for the instance."
-  default     = true
-}
-
-variable "key_create_import_access_create_standard_key" {
-  type        = bool
-  description = "If set to true enables create standard key attribute for the instance."
-  default     = true
-}
-
-variable "key_create_import_access_import_root_key" {
-  type        = bool
-  description = "If set to true enables import root key attribute for the instance."
-  default     = true
-}
-
-variable "key_create_import_access_import_standard_key" {
-  type        = bool
-  description = "If set to true enables import standard key attribute for the instance."
-  default     = true
+variable "key_create_import_access_settings" {
+  type = object({
+    create_root_key     = optional(bool, true)
+    create_standard_key = optional(bool, true)
+    import_root_key     = optional(bool, true)
+    import_standard_key = optional(bool, true)
+    enforce_token       = optional(bool, false)
+  })
+  description = "Key create import access policy settings to configure if var.enable_key_create_import_access_policy is true. For more info see https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess"
+  default     = {}
 }
