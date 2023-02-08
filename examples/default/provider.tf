@@ -3,10 +3,12 @@ provider "ibm" {
   region           = var.region
 }
 
+# Deprecated
 # Retrieve IAM access token (required for restapi provider)
 data "ibm_iam_auth_token" "token_data" {
 }
 
+# Deprecated
 provider "restapi" {
   uri                   = "https:"
   write_returns_object  = false

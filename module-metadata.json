@@ -49,6 +49,9 @@
       "type": "bool",
       "description": "If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics.",
       "default": true,
+      "source": [
+        "restapi_object.enable_metrics.count"
+      ],
       "pos": {
         "filename": "variables.tf",
         "line": 71
@@ -74,7 +77,12 @@
       "description": "Region where the Key Protect instance will be provisioned",
       "required": true,
       "source": [
-        "ibm_resource_instance.key_protect_instance.location"
+        "ibm_resource_instance.key_protect_instance.location",
+        "restapi_object.enable_metrics.create_path",
+        "restapi_object.enable_metrics.destroy_path",
+        "restapi_object.enable_metrics.path",
+        "restapi_object.enable_metrics.read_path",
+        "restapi_object.enable_metrics.update_path"
       ],
       "pos": {
         "filename": "variables.tf",
@@ -206,6 +214,12 @@
       "version_constraints": [
         "\u003e= 1.49.0"
       ]
+    },
+    "restapi": {
+      "source": "Mastercard/restapi",
+      "version_constraints": [
+        "\u003e= 1.18.0"
+      ]
     }
   },
   "managed_resources": {
@@ -218,7 +232,7 @@
       },
       "pos": {
         "filename": "main.tf",
-        "line": 15
+        "line": 38
       }
     },
     "ibm_resource_instance.key_protect_instance": {
@@ -239,6 +253,26 @@
       "pos": {
         "filename": "main.tf",
         "line": 5
+      }
+    },
+    "restapi_object.enable_metrics": {
+      "mode": "managed",
+      "type": "restapi_object",
+      "name": "enable_metrics",
+      "attributes": {
+        "count": "metrics_enabled",
+        "create_path": "region",
+        "destroy_path": "region",
+        "path": "region",
+        "read_path": "region",
+        "update_path": "region"
+      },
+      "provider": {
+        "name": "restapi"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 19
       }
     }
   },
