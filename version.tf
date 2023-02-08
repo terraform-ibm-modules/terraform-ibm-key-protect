@@ -6,7 +6,7 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = ">= 1.49.0"
     }
-    # Deprecated
+    # tflint-ignore: terraform_unused_required_providers
     restapi = {
       source  = "Mastercard/restapi"
       version = ">= 1.18.0"
