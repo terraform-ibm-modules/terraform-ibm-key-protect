@@ -8,10 +8,9 @@
 
 This module supports:
 - Creating a [Key Protect instance](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about)
-- Enabling a [rotation policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-set-rotation-policy) for the instance
-- Enabling a [dual authorization policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-dual-auth) for the instance
 - Enabling a [metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
-- Enabling a [key create and import access policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess) for the instance
+
+Although the restapi provider is currently a required provider for this module, it is no longer used for any function within the module. It will be removed in the next major version release of this module.
 
 ## Usage
 
@@ -19,6 +18,21 @@ This module supports:
 provider "ibm" {
   ibmcloud_api_key = "XXXXXXXXXX"
   region           = "us-south"
+}
+
+# Retrieve IAM access token (required for restapi provider)
+data "ibm_iam_auth_token" "token_data" {
+}
+provider "restapi" {
+  uri                   = "https:"
+  write_returns_object  = false
+  create_returns_object = false
+  debug                 = false
+  headers = {
+    Authorization    = data.ibm_iam_auth_token.token_data.iam_access_token
+    Bluemix-Instance = module.key_protect_module.key_protect_guid
+    Content-Type     = "application/vnd.ibm.kms.policy+json"
+  }
 }
 
 module "key_protect_module" {
