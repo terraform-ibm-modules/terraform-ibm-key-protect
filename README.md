@@ -8,9 +8,9 @@
 
 This module supports:
 - Creating a [Key Protect instance](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about)
-- Enabling [monitoring metrics](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
+- Enabling a [metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
 
-There is currently an [enhancement request](https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4256) open with the IBM terraform provider to support enabling metrics. Until then, this module uses the restapi provider to enable metrics.
+Although the restapi provider is currently a required provider for this module, it is no longer used for any function within the module. It will be removed in the next major version release of this module.
 
 ## Usage
 
@@ -23,7 +23,6 @@ provider "ibm" {
 # Retrieve IAM access token (required for restapi provider)
 data "ibm_iam_auth_token" "token_data" {
 }
-
 provider "restapi" {
   uri                   = "https:"
   write_returns_object  = false
@@ -77,15 +76,15 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [ibm_kms_instance_policies.key_protect_instance_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/kms_instance_policies) | resource |
 | [ibm_resource_instance.key_protect_instance](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_instance) | resource |
-| [restapi_object.enable_metrics](https://registry.terraform.io/providers/Mastercard/restapi/latest/docs/resources/object) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_key_protect_name"></a> [key\_protect\_name](#input\_key\_protect\_name) | The name to give the Key Protect instance that will be provisioned | `string` | n/a | yes |
-| <a name="input_metrics_enabled"></a> [metrics\_enabled](#input\_metrics\_enabled) | Set to true to enable metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics. | `bool` | `true` | no |
+| <a name="input_metrics_enabled"></a> [metrics\_enabled](#input\_metrics\_enabled) | If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics. | `bool` | `true` | no |
 | <a name="input_plan"></a> [plan](#input\_plan) | Plan for the Key Protect instance. Currently only 'tiered-pricing' is supported | `string` | `"tiered-pricing"` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region where the Key Protect instance will be provisioned | `string` | n/a | yes |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | Resource Group ID where the Key Protect instance will be provisioned | `string` | n/a | yes |
@@ -98,6 +97,7 @@ No modules.
 |------|-------------|
 | <a name="output_key_protect_guid"></a> [key\_protect\_guid](#output\_key\_protect\_guid) | GUID of the Key Protect instance |
 | <a name="output_key_protect_id"></a> [key\_protect\_id](#output\_key\_protect\_id) | ID of the Key Protect instance |
+| <a name="output_key_protect_instance_policies"></a> [key\_protect\_instance\_policies](#output\_key\_protect\_instance\_policies) | Instance Polices of the Key Protect instance |
 | <a name="output_key_protect_name"></a> [key\_protect\_name](#output\_key\_protect\_name) | Name of the Key Protect instance |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 <!-- BEGIN CONTRIBUTING HOOK -->

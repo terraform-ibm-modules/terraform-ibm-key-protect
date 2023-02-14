@@ -17,11 +17,8 @@
     "metrics_enabled": {
       "name": "metrics_enabled",
       "type": "bool",
-      "description": "Set to true to enable metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics.",
+      "description": "If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics.",
       "default": true,
-      "source": [
-        "restapi_object.enable_metrics.count"
-      ],
       "pos": {
         "filename": "variables.tf",
         "line": 48
@@ -47,12 +44,7 @@
       "description": "Region where the Key Protect instance will be provisioned",
       "required": true,
       "source": [
-        "ibm_resource_instance.key_protect_instance.location",
-        "restapi_object.enable_metrics.create_path",
-        "restapi_object.enable_metrics.destroy_path",
-        "restapi_object.enable_metrics.path",
-        "restapi_object.enable_metrics.read_path",
-        "restapi_object.enable_metrics.update_path"
+        "ibm_resource_instance.key_protect_instance.location"
       ],
       "pos": {
         "filename": "variables.tf",
@@ -135,6 +127,15 @@
         "line": 10
       }
     },
+    "key_protect_instance_policies": {
+      "name": "key_protect_instance_policies",
+      "description": "Instance Polices of the Key Protect instance",
+      "value": "ibm_kms_instance_policies.key_protect_instance_policies",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 20
+      }
+    },
     "key_protect_name": {
       "name": "key_protect_name",
       "description": "Name of the Key Protect instance",
@@ -164,6 +165,18 @@
     }
   },
   "managed_resources": {
+    "ibm_kms_instance_policies.key_protect_instance_policies": {
+      "mode": "managed",
+      "type": "ibm_kms_instance_policies",
+      "name": "key_protect_instance_policies",
+      "provider": {
+        "name": "ibm"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 19
+      }
+    },
     "ibm_resource_instance.key_protect_instance": {
       "mode": "managed",
       "type": "ibm_resource_instance",
@@ -182,26 +195,6 @@
       "pos": {
         "filename": "main.tf",
         "line": 5
-      }
-    },
-    "restapi_object.enable_metrics": {
-      "mode": "managed",
-      "type": "restapi_object",
-      "name": "enable_metrics",
-      "attributes": {
-        "count": "metrics_enabled",
-        "create_path": "region",
-        "destroy_path": "region",
-        "path": "region",
-        "read_path": "region",
-        "update_path": "region"
-      },
-      "provider": {
-        "name": "restapi"
-      },
-      "pos": {
-        "filename": "main.tf",
-        "line": 20
       }
     }
   },
