@@ -10,29 +10,12 @@ This module supports:
 - Creating a [Key Protect instance](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about)
 - Enabling a [metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
 
-Although the restapi provider is currently a required provider for this module, it is no longer used for any function within the module. It will be removed in the next major version release of this module.
-
 ## Usage
 
 ```hcl
 provider "ibm" {
   ibmcloud_api_key = "XXXXXXXXXX"
   region           = "us-south"
-}
-
-# Retrieve IAM access token (required for restapi provider)
-data "ibm_iam_auth_token" "token_data" {
-}
-provider "restapi" {
-  uri                   = "https:"
-  write_returns_object  = false
-  create_returns_object = false
-  debug                 = false
-  headers = {
-    Authorization    = data.ibm_iam_auth_token.token_data.iam_access_token
-    Bluemix-Instance = module.key_protect_module.key_protect_guid
-    Content-Type     = "application/vnd.ibm.kms.policy+json"
-  }
 }
 
 module "key_protect_module" {
@@ -66,7 +49,6 @@ module "key_protect_module" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.49.0 |
-| <a name="requirement_restapi"></a> [restapi](#requirement\_restapi) | >= 1.18.0 |
 
 ## Modules
 
