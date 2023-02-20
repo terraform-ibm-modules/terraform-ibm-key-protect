@@ -156,12 +156,6 @@
       "version_constraints": [
         "\u003e= 1.49.0"
       ]
-    },
-    "restapi": {
-      "source": "Mastercard/restapi",
-      "version_constraints": [
-        "\u003e= 1.18.0"
-      ]
     }
   },
   "managed_resources": {
