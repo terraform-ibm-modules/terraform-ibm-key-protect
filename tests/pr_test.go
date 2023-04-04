@@ -12,12 +12,17 @@ import (
 const resourceGroup = "geretain-test-key-protect"
 const terraformDir = "examples/default"
 
+var accessTags = []string{"geretain-dev:permanent-test-tag-1", "geretain-dev:permanent-test-tag-2"}
+
 func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
 		TerraformDir:  terraformDir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
+		TerraformVars: map[string]interface{}{
+			"access_tags": accessTags,
+		},
 	})
 
 	return options
