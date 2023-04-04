@@ -36,6 +36,12 @@ module "key_protect_module" {
         - `Editor` platform access
         - `Manager` platform access (required to enable metrics)
 
+Optionally, you need the following permissions to attach Access Management tags to resources in this module.
+
+- IAM Services
+    - **Tagging** service
+        - `Administrator` platform access
+
 <!-- BEGIN EXAMPLES HOOK -->
 ## Examples
 
