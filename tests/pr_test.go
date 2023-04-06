@@ -22,14 +22,14 @@ type Config struct {
 	ExistingAccessTags []string `yaml:"accessTags"`
 }
 
+var config Config
+
 func TestMain(m *testing.M) {
 	// Read the YAML file contents
 	data, err := os.ReadFile(yamlLocation)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Create a struct to hold the YAML data
-	var config Config
 	// Unmarshal the YAML data into the struct
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
