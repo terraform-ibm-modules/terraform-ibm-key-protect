@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
-	"gopkg.in/yaml.v3"
 )
 
 // Use existing resource group for tests
@@ -18,20 +18,12 @@ const terraformDir = "examples/default"
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 
-type Config struct {
-	ExistingAccessTags []string `yaml:"accessTags"`
-}
-
-var config Config
+var permanentResources map[string]interface{}
 
 func TestMain(m *testing.M) {
 	// Read the YAML file contents
-	data, err := os.ReadFile(yamlLocation)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Unmarshal the YAML data into the struct
-	err = yaml.Unmarshal(data, &config)
+	var err error
+	permanentResources, err = common.LoadMapFromYaml(yamlLocation)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,7 +38,7 @@ func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"access_tags": config.ExistingAccessTags,
+			"access_tags": permanentResources["accessTags"],
 		},
 	})
 
