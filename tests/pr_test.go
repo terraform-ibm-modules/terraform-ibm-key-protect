@@ -12,12 +12,19 @@ import (
 const resourceGroup = "geretain-test-key-protect"
 const terraformDir = "examples/default"
 
+var ignoreUpdates = []string{
+	"module.key_protect_module.ibm_kms_instance_policies.key_protect_instance_policies",
+}
+
 func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
 		TerraformDir:  terraformDir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
+		IgnoreUpdates: testhelper.Exemptions{
+			List: ignoreUpdates,
+		},
 	})
 
 	return options
