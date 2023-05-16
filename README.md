@@ -40,6 +40,12 @@ module "key_protect_module" {
         - `Editor` platform access
         - `Manager` platform access (required to enable metrics)
 
+To attach access management tags to resources in this module, you need the following permissions.
+
+- IAM Services
+    - **Tagging** service
+        - `Administrator` platform access
+
 <!-- BEGIN EXAMPLES HOOK -->
 ## Examples
 
@@ -64,11 +70,13 @@ No modules.
 |------|------|
 | [ibm_kms_instance_policies.key_protect_instance_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/kms_instance_policies) | resource |
 | [ibm_resource_instance.key_protect_instance](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_instance) | resource |
+| [ibm_resource_tag.key_protect_tag](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_tag) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_access_tags"></a> [access\_tags](#input\_access\_tags) | A list of access tags to apply to the Key Protect instance created by the module. For more information, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial. | `list(string)` | `[]` | no |
 | <a name="input_dual_auth_delete_enabled"></a> [dual\_auth\_delete\_enabled](#input\_dual\_auth\_delete\_enabled) | If set to true, Key Protect enables a dual authorization policy on the instance. Note: Once the dual authorization policy is set on the instance, it cannot be reverted. An instance with dual authorization policy enabled cannot be destroyed using Terraform. | `bool` | `false` | no |
 | <a name="input_key_create_import_access_enabled"></a> [key\_create\_import\_access\_enabled](#input\_key\_create\_import\_access\_enabled) | If set to true, Key Protect enables a key create import access policy on the instance | `bool` | `true` | no |
 | <a name="input_key_create_import_access_settings"></a> [key\_create\_import\_access\_settings](#input\_key\_create\_import\_access\_settings) | Key create import access policy settings to configure if var.enable\_key\_create\_import\_access\_policy is true. For more info see https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess | <pre>object({<br>    create_root_key     = optional(bool, true)<br>    create_standard_key = optional(bool, true)<br>    import_root_key     = optional(bool, true)<br>    import_standard_key = optional(bool, true)<br>    enforce_token       = optional(bool, false)<br>  })</pre> | `{}` | no |

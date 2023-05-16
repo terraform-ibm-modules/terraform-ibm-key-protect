@@ -1,6 +1,27 @@
 {
   "path": ".",
   "variables": {
+    "access_tags": {
+      "name": "access_tags",
+      "type": "list(string)",
+      "description": "A list of access tags to apply to the Key Protect instance created by the module. For more information, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial.",
+      "default": [],
+      "source": [
+        "ibm_resource_tag.key_protect_tag.count",
+        "ibm_resource_tag.key_protect_tag.tags"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 95
+      },
+      "min_length": 1,
+      "max_length": 128,
+      "matches": "^[A-Za-z0-9:_ .-]+$",
+      "computed": true,
+      "elem": {
+        "type": "TypeString"
+      }
+    },
     "dual_auth_delete_enabled": {
       "name": "dual_auth_delete_enabled",
       "type": "bool",
@@ -239,6 +260,22 @@
       "pos": {
         "filename": "main.tf",
         "line": 5
+      }
+    },
+    "ibm_resource_tag.key_protect_tag": {
+      "mode": "managed",
+      "type": "ibm_resource_tag",
+      "name": "key_protect_tag",
+      "attributes": {
+        "count": "access_tags",
+        "tags": "access_tags"
+      },
+      "provider": {
+        "name": "ibm"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 45
       }
     }
   },
