@@ -45,10 +45,51 @@ variable "plan" {
   }
 }
 
+variable "rotation_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a rotation policy on the Key Protect instance."
+  default     = true
+}
+
+variable "rotation_interval_month" {
+  type        = number
+  description = "Specifies the key rotation time interval in months. Must be between 1 and 12 inclusive."
+  default     = 1
+
+  validation {
+    condition     = (var.rotation_interval_month >= 1) && (var.rotation_interval_month <= 12)
+    error_message = "The rotation_interval_month must be between 1 and 12 inclusive."
+  }
+}
+
+variable "dual_auth_delete_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a dual authorization policy on the instance. Note: Once the dual authorization policy is set on the instance, it cannot be reverted. An instance with dual authorization policy enabled cannot be destroyed using Terraform."
+  default     = false
+}
+
 variable "metrics_enabled" {
   type        = bool
   description = "If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics."
   default     = true
+}
+
+variable "key_create_import_access_enabled" {
+  type        = bool
+  description = "If set to true, Key Protect enables a key create import access policy on the instance"
+  default     = true
+}
+
+variable "key_create_import_access_settings" {
+  type = object({
+    create_root_key     = optional(bool, true)
+    create_standard_key = optional(bool, true)
+    import_root_key     = optional(bool, true)
+    import_standard_key = optional(bool, true)
+    enforce_token       = optional(bool, false)
+  })
+  description = "Key create import access policy settings to configure if var.enable_key_create_import_access_policy is true. For more info see https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess"
+  default     = {}
 }
 
 variable "access_tags" {
