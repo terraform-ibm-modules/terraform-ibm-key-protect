@@ -15,11 +15,6 @@ import (
 const resourceGroup = "geretain-test-key-protect"
 const terraformDir = "examples/default"
 
-var ignoreUpdates = []string{
-	// remove after merge
-	"module.key_protect_module.ibm_kms_instance_policies.key_protect_instance_policies",
-}
-
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
 
@@ -42,9 +37,6 @@ func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 		TerraformDir:  terraformDir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
-		IgnoreUpdates: testhelper.Exemptions{
-			List: ignoreUpdates,
-		},
 		TerraformVars: map[string]interface{}{
 			"access_tags": permanentResources["accessTags"],
 		},
