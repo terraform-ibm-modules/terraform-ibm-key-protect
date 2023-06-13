@@ -22,8 +22,8 @@ provider "ibm" {
 }
 
 module "key_protect_module" {
-  # Replace "main" with a GIT release version to lock into a specific release
-  source            = "git::https://github.com:terraform-ibm-modules/terraform-ibm-key-protect.git?ref=main"
+  source  = "terraform-ibm-modules/key-protect/ibm"
+  version = "latest" # Replace "latest" with a release version to lock into a specific release
   key_protect_name  = "my-key-protect-instance"
   resource_group_id = "xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX"
   region            = "us-south"
