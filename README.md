@@ -52,18 +52,18 @@ To attach access management tags to resources in this module, you need the follo
 <!-- END EXAMPLES HOOK -->
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.53.0 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -71,7 +71,7 @@ No modules.
 | [ibm_resource_instance.key_protect_instance](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_instance) | resource |
 | [ibm_resource_tag.key_protect_tag](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_tag) | resource |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -89,7 +89,7 @@ No modules.
 | <a name="input_service_endpoints"></a> [service\_endpoints](#input\_service\_endpoints) | Types of the service endpoints to be set for the Key Protect instance. Possible values are 'public', 'private', or 'public-and-private' | `string` | `"public-and-private"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of tags to associate with the Key Protect instance | `list(string)` | `[]` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
