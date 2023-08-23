@@ -57,7 +57,7 @@ To attach access management tags to resources in this module, you need the follo
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.53.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.56.1 |
 
 ### Modules
 
