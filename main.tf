@@ -20,7 +20,7 @@ resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
   instance_id = ibm_resource_instance.key_protect_instance.guid
   rotation {
     enabled        = var.rotation_enabled
-    interval_month = var.rotation_interval_month
+    interval_month = var.rotation_enabled == true ? var.rotation_interval_month : null
   }
   dual_auth_delete {
     enabled = var.dual_auth_delete_enabled
