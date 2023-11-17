@@ -13,7 +13,7 @@
       "keywords": [
         "terraform",
         "key protect",
-        "authorization",
+        "encryption",
         "policy"
       ],
       "short_description": "Terraform module to create and work with IBM Key Protect",
@@ -40,6 +40,10 @@
         {
           "title": "Configure key create and import access policy",
           "description": "Configure a key create and import access policy for the Key Protect instance."
+        },
+        {
+          "title": "Attach resource tags",
+          "description": "Attach resource tags to the Key Protect instance."
         },
         {
           "title": "Attach access tags",
