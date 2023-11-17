@@ -48,14 +48,14 @@
       ],
       "flavors": [
         {
-          "label": "Default",
-          "name": "default",
-          "working_directory": "examples/default",
+          "label": "Basic",
+          "name": "basic",
+          "working_directory": "examples/basic",
           "architecture": {
             "diagrams": [
               {
                 "diagram": {
-                  "caption": "Default example",
+                  "caption": "Basic example",
                   "url": "https://raw.githubusercontent.com/terraform-ibm-modules/documentation/main/icons/ModuleExampleDiagram.svg",
                   "type": "image/svg+xml"
                 },
