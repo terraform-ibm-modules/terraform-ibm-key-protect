@@ -1,0 +1,70 @@
+{
+  "products": [
+    {
+      "name": "terraform-ibm-key-protect",
+      "label": "Key Protect module",
+      "product_kind": "module",
+      "tags": [
+        "dev_ops",
+        "target_terraform",
+        "terraform",
+        "module"
+      ],
+      "keywords": [
+        "terraform",
+        "key protect",
+        "authorization",
+        "policy"
+      ],
+      "short_description": "Terraform module to create and work with IBM Key Protect",
+      "long_description": "Use this module to provision and configure an IBM Key Protect instance.\nYou can configure the following aspects of your instance:\n- [Key Protect instance](https://cloud.ibm.com/docs/key-protect?topic=key-protect-about)\n- [Rotation policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-set-rotation-policy&interface=ui)\n- [Dual authorisation policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-dual-auth)\n- [Metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics)\n- [Key create and import access policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess)\n#### Usage\n```hcl\nprovider \"ibm\" {\n  ibmcloud_api_key = \"XXXXXXXXXX\"\n  region           = \"us-south\"\n}\n\nmodule \"key_protect_module\" {\n  source  = \"terraform-ibm-modules/key-protect/ibm\"\n  version = \"latest\" # Replace \"latest\" with a release version to lock into a specific release\n  key_protect_name  = \"my-key-protect-instance\"\n  resource_group_id = \"xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX\"\n  region            = \"us-south\"\n}```",
+      "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/blob/main/README.md",
+      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-key-protect/main/images/key_protect_icon.svg",
+      "features": [
+        {
+          "title": "Create a Key Protect instance",
+          "description": "Create an IBM Key Protect instance."
+        },
+        {
+          "title": "Configure rotation policy",
+          "description": "Configure a rotation policy for the Key Protect instance."
+        },
+        {
+          "title": "Configure dual authorization policy",
+          "description": "Configure a dual authorization policy for the Key Protect instance."
+        },
+        {
+          "title": "Configure metrics policy",
+          "description": "Configure a metrics policy for the Key Protect instance."
+        },
+        {
+          "title": "Configure key create and import access policy",
+          "description": "Configure a key create and import access policy for the Key Protect instance."
+        },
+        {
+          "title": "Attach access tags",
+          "description": "Attach access tags to the Key Protect instance."
+        }
+      ],
+      "flavors": [
+        {
+          "label": "Default",
+          "name": "default",
+          "working_directory": "examples/default",
+          "architecture": {
+            "diagrams": [
+              {
+                "diagram": {
+                  "caption": "Default example",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/documentation/main/icons/ModuleExampleDiagram.svg",
+                  "type": "image/svg+xml"
+                },
+                "description": "A simple example that shows how to provision a basic Key Protect instance."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
