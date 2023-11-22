@@ -48,7 +48,7 @@ To attach access management tags to resources in this module, you need the follo
 <!-- BEGIN EXAMPLES HOOK -->
 ## Examples
 
-- [ Default example](examples/default)
+- [ Basic example](examples/basic)
 <!-- END EXAMPLES HOOK -->
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

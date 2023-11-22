@@ -13,7 +13,7 @@ import (
 
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
-const terraformDir = "examples/default"
+const terraformDir = "examples/basic"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -45,10 +45,10 @@ func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 	return options
 }
 
-func TestRunDefaultExample(t *testing.T) {
+func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "kp-default")
+	options := setupOptions(t, "kp-basic")
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
@@ -57,7 +57,7 @@ func TestRunDefaultExample(t *testing.T) {
 func TestRunUpgrade(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "kp-default-upgrade")
+	options := setupOptions(t, "kp-basic-upgrade")
 	output, err := options.RunTestUpgrade()
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
