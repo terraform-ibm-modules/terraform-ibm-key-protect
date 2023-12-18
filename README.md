@@ -33,8 +33,8 @@ provider "ibm" {
 }
 
 module "key_protect_module" {
-  source  = "terraform-ibm-modules/key-protect/ibm"
-  version = "latest" # Replace "latest" with a release version to lock into a specific release
+  source            = "terraform-ibm-modules/key-protect/ibm"
+  version           = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
   key_protect_name  = "my-key-protect-instance"
   resource_group_id = "xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX"
   region            = "us-south"
