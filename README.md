@@ -13,7 +13,18 @@ This module supports:
 - Enabling a [metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
 - Enabling a [key create and import access policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess) for the instance
 
-## Usage
+<!-- Below content is automatically populated via pre-commit hook -->
+<!-- BEGIN OVERVIEW HOOK -->
+## Overview
+* [terraform-ibm-key-protect](#terraform-ibm-key-protect)
+* [Examples](./examples)
+    * [Basic example](./examples/basic)
+* [Contributing](#contributing)
+<!-- END OVERVIEW HOOK -->
+
+## terraform-ibm-key-protect
+
+### Usage
 
 ```hcl
 provider "ibm" {
@@ -44,12 +55,6 @@ To attach access management tags to resources in this module, you need the follo
 - IAM Services
     - **Tagging** service
         - `Administrator` platform access
-
-<!-- BEGIN EXAMPLES HOOK -->
-## Examples
-
-- [ Basic example](examples/basic)
-<!-- END EXAMPLES HOOK -->
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
