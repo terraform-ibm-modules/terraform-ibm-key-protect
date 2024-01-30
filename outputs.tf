@@ -21,3 +21,9 @@ output "key_protect_instance_policies" {
   value       = ibm_kms_instance_policies.key_protect_instance_policies
   description = "Instance Polices of the Key Protect instance"
 }
+
+output "kms_endpoints" {
+  description = "Instance endpoint URLs"
+  value = { for key, value in ibm_resource_instance.key_protect_instance.extensions : key => value
+  }
+}
