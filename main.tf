@@ -2,6 +2,11 @@
 # Create Key Protect instance
 ##############################################################################
 
+locals {
+  kp_endpoints = { for key, value in ibm_resource_instance.key_protect_instance.extensions : key => value
+  }
+}
+
 resource "ibm_resource_instance" "key_protect_instance" {
   name              = var.key_protect_name
   resource_group_id = var.resource_group_id

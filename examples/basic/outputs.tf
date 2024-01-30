@@ -31,3 +31,13 @@ output "key_protect_instance_policies" {
   description = "Instance policies of the Key Protect instance"
   value       = module.key_protect_module.key_protect_instance_policies
 }
+
+output "kp_private_endpoint" {
+  description = "Instance private endpoint URL"
+  value       = module.key_protect_module.kp_private_endpoint
+}
+
+output "kp_public_endpoint" {
+  description = "Instance public endpoint URL"
+  value       = module.key_protect_module.kp_public_endpoint
+}
