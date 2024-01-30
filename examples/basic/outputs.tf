@@ -32,12 +32,12 @@ output "key_protect_instance_policies" {
   value       = module.key_protect_module.key_protect_instance_policies
 }
 
-output "kms_private_endpoint" {
+output "kp_private_endpoint" {
   description = "Instance private endpoint URL"
-  value       = module.key_protect_module.kms_endpoints["endpoints.private"]
+  value       = module.key_protect_module.kp_private_endpoint
 }
 
-output "kms_public_endpoint" {
+output "kp_public_endpoint" {
   description = "Instance public endpoint URL"
-  value       = module.key_protect_module.kms_endpoints["endpoints.public"]
+  value       = module.key_protect_module.kp_public_endpoint
 }
