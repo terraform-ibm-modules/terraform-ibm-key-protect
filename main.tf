@@ -13,8 +13,10 @@ resource "ibm_resource_instance" "key_protect_instance" {
   service           = "kms"
   plan              = var.plan
   location          = var.region
-  service_endpoints = var.service_endpoints
   tags              = var.tags
+  parameters = {
+    allowed_network : var.service_endpoints
+  }
 }
 
 ##############################################################################
