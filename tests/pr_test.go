@@ -13,7 +13,8 @@ import (
 
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
-const terraformDir = "examples/basic"
+const basicExampleTerraformDir = "examples/basic"
+const advanceExampleTerraformDir = "examples/advance"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -34,7 +35,7 @@ func TestMain(m *testing.M) {
 func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
-		TerraformDir:  terraformDir,
+		TerraformDir:  basicExampleTerraformDir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
@@ -49,6 +50,22 @@ func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
 	options := setupOptions(t, "kp-basic")
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
+func TestRunAdvanceExample(t *testing.T) {
+	t.Parallel()
+
+	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
+		Testing:      t,
+		TerraformDir: advanceExampleTerraformDir,
+		Prefix:       "advance_kp",
+		TerraformVars: map[string]interface{}{
+			"existing_kms_instance_guid": permanentResources["advance_kp_south"],
+		},
+	})
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
