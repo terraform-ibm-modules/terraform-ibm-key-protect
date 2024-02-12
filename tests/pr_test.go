@@ -61,9 +61,9 @@ func TestRunAdvanceExample(t *testing.T) {
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:      t,
 		TerraformDir: advanceExampleTerraformDir,
-		Prefix:       "advance_kp",
+		Prefix:       "kp-advance",
 		TerraformVars: map[string]interface{}{
-			"existing_kms_instance_guid": permanentResources["advance_kp_south"],
+			"access_tags": permanentResources["accessTags"],
 		},
 	})
 	output, err := options.RunTestConsistency()
