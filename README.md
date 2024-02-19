@@ -18,7 +18,7 @@ This module supports:
 ## Overview
 * [terraform-ibm-key-protect](#terraform-ibm-key-protect)
 * [Examples](./examples)
-    * [Advance example](./examples/advance)
+    * [Advanced private example](./examples/advanced)
     * [Basic example](./examples/basic)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->

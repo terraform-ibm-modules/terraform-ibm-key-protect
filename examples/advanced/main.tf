@@ -11,7 +11,7 @@ module "resource_group" {
 }
 
 ##############################################################################
-# Key Protect with Private Service Endpoint and Keyring
+# Key Protect with Private Service Endpoint
 ##############################################################################
 
 module "key_protect_module" {
@@ -21,7 +21,7 @@ module "key_protect_module" {
   region            = var.region
   tags              = var.resource_tags
   access_tags       = var.access_tags
-  #service_endpoints  = "private-only"      #Uncomment this line to create the Private Key Protect, this will require you to be part of IBM cloud private network when creating this resource
+  service_endpoints = "private-only"
 }
 
 ##############################################################################
@@ -29,24 +29,24 @@ module "key_protect_module" {
 ##############################################################################
 
 module "kms_key_ring" {
-  source      = "terraform-ibm-modules/kms-key-ring/ibm"
-  version     = "2.3.1"
-  instance_id = module.key_protect_module.key_protect_guid
-  key_ring_id = "my-key-ring"
-  depends_on  = [module.key_protect_module]
+  source        = "terraform-ibm-modules/kms-key-ring/ibm"
+  version       = "2.3.1"
+  instance_id   = module.key_protect_module.key_protect_guid
+  key_ring_id   = "${var.prefix}-my-key-ring"
+  endpoint_type = "private"
 }
 
 ##############################################################################
-# KMS standard key
+# KMS root key
 ##############################################################################
 
 module "ibm_kms_key" {
   source          = "terraform-ibm-modules/kms-key/ibm"
   version         = "1.2.1"
   kms_instance_id = module.key_protect_module.key_protect_guid
-  key_name        = "${var.prefix}-standard-key"
+  key_name        = "${var.prefix}-root-key"
   kms_key_ring_id = module.kms_key_ring.key_ring_id
   standard_key    = false
   force_delete    = true
-  endpoint_type   = "public" #can change to private for creating a private key in private key protect instance
+  endpoint_type   = "private"
 }

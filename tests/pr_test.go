@@ -6,6 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -14,7 +16,7 @@ import (
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
 const basicExampleTerraformDir = "examples/basic"
-const advanceExampleTerraformDir = "examples/advance"
+const advanceExampleTerraformDir = "examples/advanced"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -58,17 +60,38 @@ func TestRunBasicExample(t *testing.T) {
 func TestRunAdvanceExample(t *testing.T) {
 	t.Parallel()
 
-	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: advanceExampleTerraformDir,
-		Prefix:       "kp-advance",
-		TerraformVars: map[string]interface{}{
-			"access_tags": permanentResources["accessTags"],
+	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+		Testing: t,
+		Prefix:  "advanced-key-protect",
+		TarIncludePatterns: []string{
+			"*.tf",
+			"scripts/*.sh",
+			"examples/fscloud/*.tf",
+			"modules/*/*.tf",
+			"kubeconfig/README.md",
 		},
+		ResourceGroup:          resourceGroup,
+		TemplateFolder:         advancedExampleDir,
+		Tags:                   []string{"test-schematic"},
+		DeleteWorkspaceOnFail:  false,
+		WaitJobCompleteMinutes: 60,
 	})
-	output, err := options.RunTestConsistency()
+
+	// If "jp-osa" was the best region selected, default to us-south instead.
+	// "jp-osa" is currently not allowing hs-crypto be used for encrypting in that region.
+	if options.Region == "jp-osa" {
+		options.Region = "us-south"
+	}
+
+	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+		{Name: "region", Value: options.Region, DataType: "string"},
+		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
+	}
+
+	err := options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
-	assert.NotNil(t, output, "Expected some output")
 }
 
 func TestRunUpgrade(t *testing.T) {

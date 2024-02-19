@@ -37,17 +37,17 @@ output "kp_private_endpoint" {
   value       = module.key_protect_module.kp_private_endpoint
 }
 
-output "kms_standard_key_id" {
+output "kms_root_key_id" {
   description = "Key Protect Standard Key ID"
   value       = module.ibm_kms_key.key_id
 }
 
-output "kms_standard_key_rotation_interval_month" {
+output "kms_root_key_rotation_interval_month" {
   description = "Month Interval for Rotation of Standard Key"
   value       = module.ibm_kms_key.rotation_interval_month
 }
 
-output "kms_standard_key_dual_auth_delete_enabled" {
+output "kms_root_key_dual_auth_delete_enabled" {
   description = "Is Dual Auth Delete Enabled"
   value       = module.ibm_kms_key.dual_auth_delete
 }
