@@ -5,6 +5,7 @@
 locals {
   kp_endpoints = { for key, value in ibm_resource_instance.key_protect_instance.extensions : key => value
   }
+  service_endpoints = var.service_endpoints == "private" ? "private-only" : var.service_endpoints
 }
 
 resource "ibm_resource_instance" "key_protect_instance" {
@@ -15,7 +16,7 @@ resource "ibm_resource_instance" "key_protect_instance" {
   location          = var.region
   tags              = var.tags
   parameters = {
-    allowed_network : var.service_endpoints
+    allowed_network : local.service_endpoints
   }
 }
 
