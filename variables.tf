@@ -23,14 +23,14 @@ variable "tags" {
   default     = []
 }
 
-variable "service_endpoints" {
+variable "allowed_network" {
   type        = string
   description = "Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'"
   default     = "public-and-private"
 
   validation {
-    condition     = can(regex("public-and-private|private-only", var.service_endpoints))
-    error_message = "Valid values for service_endpoints are 'public-and-private', and 'private-only'."
+    condition     = can(regex("public-and-private|private-only", var.allowed_network))
+    error_message = "Valid values for allowed_network are 'public-and-private', and 'private-only'."
   }
 }
 
