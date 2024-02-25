@@ -16,7 +16,7 @@ import (
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
 const basicExampleTerraformDir = "examples/basic"
-const advanceExampleTerraformDir = "examples/advanced"
+const advancedExampleTerraformDir = "examples/advanced"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -71,7 +71,7 @@ func TestRunAdvanceExample(t *testing.T) {
 			"kubeconfig/README.md",
 		},
 		ResourceGroup:          resourceGroup,
-		TemplateFolder:         advancedExampleDir,
+		TemplateFolder:         advancedExampleTerraformDir,
 		Tags:                   []string{"test-schematic"},
 		DeleteWorkspaceOnFail:  false,
 		WaitJobCompleteMinutes: 60,
