@@ -18,7 +18,7 @@ output "key_protect_name" {
 }
 
 output "key_protect_instance_policies" {
-  value       = ibm_kms_instance_policies.key_protect_instance_policies
+  value       = local.instance_policies
   description = "Instance Polices of the Key Protect instance"
 }
 
