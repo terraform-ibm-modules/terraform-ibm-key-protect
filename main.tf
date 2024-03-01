@@ -45,6 +45,19 @@ resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
   }
 }
 
+locals {
+  # instance policy output is not formatted correctly, cleanup done in this local
+  # tracking in issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5163
+  instance_policies = {
+    dual_auth_delete         = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.dual_auth_delete : obj if obj != null]
+    id                       = ibm_kms_instance_policies.key_protect_instance_policies.id
+    instance_id              = ibm_kms_instance_policies.key_protect_instance_policies.instance_id
+    key_create_import_access = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.key_create_import_access : obj if obj != null]
+    metrics                  = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.metrics : obj if obj != null]
+    rotation                 = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.rotation : obj if obj != null]
+  }
+}
+
 ##############################################################################
 # Attach Access Tags
 ##############################################################################
