@@ -15,7 +15,7 @@ resource "ibm_resource_instance" "key_protect_instance" {
   location          = var.region
   tags              = var.tags
   parameters = {
-    allowed_network : var.service_endpoints
+    allowed_network : var.allowed_network
   }
 }
 
@@ -42,6 +42,19 @@ resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
     import_root_key     = var.key_create_import_access_settings.import_root_key
     import_standard_key = var.key_create_import_access_settings.import_standard_key
     enforce_token       = var.key_create_import_access_settings.enforce_token
+  }
+}
+
+locals {
+  # instance policy output is not formatted correctly, cleanup done in this local
+  # tracking in issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5163
+  instance_policies = {
+    dual_auth_delete         = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.dual_auth_delete : obj if obj != null]
+    id                       = ibm_kms_instance_policies.key_protect_instance_policies.id
+    instance_id              = ibm_kms_instance_policies.key_protect_instance_policies.instance_id
+    key_create_import_access = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.key_create_import_access : obj if obj != null]
+    metrics                  = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.metrics : obj if obj != null]
+    rotation                 = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.rotation : obj if obj != null]
   }
 }
 
