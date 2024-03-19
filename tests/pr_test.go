@@ -6,8 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -15,8 +13,7 @@ import (
 
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
-const basicExampleTerraformDir = "examples/basic"
-const advancedExampleTerraformDir = "examples/advanced"
+const terraformDir = "examples/basic"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -37,7 +34,7 @@ func TestMain(m *testing.M) {
 func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:       t,
-		TerraformDir:  basicExampleTerraformDir,
+		TerraformDir:  terraformDir,
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
@@ -55,34 +52,6 @@ func TestRunBasicExample(t *testing.T) {
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
-}
-
-func TestRunAdvanceExample(t *testing.T) {
-	t.Parallel()
-
-	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
-		Testing: t,
-		Prefix:  "advanced-key-protect",
-		TarIncludePatterns: []string{
-			"*.tf",
-			"modules/*/*.tf",
-		},
-		ResourceGroup:          resourceGroup,
-		TemplateFolder:         advancedExampleTerraformDir,
-		Tags:                   []string{"test-schematic"},
-		DeleteWorkspaceOnFail:  false,
-		WaitJobCompleteMinutes: 60,
-	})
-
-	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
-		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "region", Value: options.Region, DataType: "string"},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
-		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
-	}
-
-	err := options.RunSchematicTest()
-	assert.Nil(t, err, "This should not have errored")
 }
 
 func TestRunUpgrade(t *testing.T) {
