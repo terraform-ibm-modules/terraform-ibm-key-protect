@@ -74,12 +74,6 @@ func TestRunAdvanceExample(t *testing.T) {
 		WaitJobCompleteMinutes: 60,
 	})
 
-	// If "jp-osa" was the best region selected, default to us-south instead.
-	// "jp-osa" is currently not allowing hs-crypto be used for encrypting in that region.
-	if options.Region == "jp-osa" {
-		options.Region = "us-south"
-	}
-
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "region", Value: options.Region, DataType: "string"},
