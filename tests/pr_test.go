@@ -65,10 +65,7 @@ func TestRunAdvanceExample(t *testing.T) {
 		Prefix:  "advanced-key-protect",
 		TarIncludePatterns: []string{
 			"*.tf",
-			"scripts/*.sh",
-			"examples/fscloud/*.tf",
 			"modules/*/*.tf",
-			"kubeconfig/README.md",
 		},
 		ResourceGroup:          resourceGroup,
 		TemplateFolder:         advancedExampleTerraformDir,
