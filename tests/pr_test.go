@@ -62,6 +62,7 @@ func TestRunAdvanceExample(t *testing.T) {
 		Testing: t,
 		Prefix:  "advanced-key-protect",
 		TarIncludePatterns: []string{
+			"*.tf",
 			advancedExampleTerraformDir + "/*.tf",
 		},
 
