@@ -21,7 +21,7 @@ module "key_protect_module" {
   region            = var.region
   tags              = var.resource_tags
   access_tags       = var.access_tags
-  service_endpoints = "private-only"
+  allowed_network   = "private-only"
 }
 
 ##############################################################################
