@@ -73,6 +73,9 @@ func TestRunAdvanceExample(t *testing.T) {
 		WaitJobCompleteMinutes: 60,
 	})
 
+	// Workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5154
+	options.AddWorkspaceEnvVar("IBMCLOUD_KP_API_ENDPOINT", "https://private."+options.Region+".kms.cloud.ibm.com", false, false)
+
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "region", Value: options.Region, DataType: "string"},
