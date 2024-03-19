@@ -68,6 +68,23 @@
               }
             ]
           }
+        },
+        {
+          "label": "Advanced",
+          "name": "advanced",
+          "working_directory": "examples/advanced",
+          "architecture": {
+            "diagrams": [
+              {
+                "diagram": {
+                  "caption": "Advanced example",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/documentation/main/icons/ModuleExampleDiagram.svg",
+                  "type": "image/svg+xml"
+                },
+                "description": "An advanced example that shows how to provision a private only Key Protect instance with a new Key Ring and Key."
+              }
+            ]
+          }
         }
       ]
     }
