@@ -63,7 +63,6 @@ func TestRunAdvanceExample(t *testing.T) {
 		Prefix:  "advanced-key-protect",
 		TarIncludePatterns: []string{
 			"*.tf",
-			"modules/*/*.tf",
 		},
 
 		ResourceGroup:          resourceGroup,
