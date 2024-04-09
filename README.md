@@ -41,7 +41,7 @@ module "key_protect_module" {
   region            = "us-south"
 }
 ```
-## Required IAM access policies
+### Required IAM access policies
 
 - Account Management
     - **Resource Group** service
