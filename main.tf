@@ -24,7 +24,8 @@ resource "ibm_resource_instance" "key_protect_instance" {
 ##############################################################################
 
 resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
-  instance_id = ibm_resource_instance.key_protect_instance.guid
+  instance_id   = ibm_resource_instance.key_protect_instance.guid
+  endpoint_type = var.allowed_network == "private-only" ? "private" : "public"
   rotation {
     enabled        = var.rotation_enabled
     interval_month = var.rotation_enabled == true ? var.rotation_interval_month : null
