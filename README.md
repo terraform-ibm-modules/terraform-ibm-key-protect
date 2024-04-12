@@ -99,6 +99,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_key_protect_crn"></a> [key\_protect\_crn](#output\_key\_protect\_crn) | CRN of the Key Protect instance |
 | <a name="output_key_protect_guid"></a> [key\_protect\_guid](#output\_key\_protect\_guid) | GUID of the Key Protect instance |
 | <a name="output_key_protect_id"></a> [key\_protect\_id](#output\_key\_protect\_id) | ID of the Key Protect instance |
 | <a name="output_key_protect_instance_policies"></a> [key\_protect\_instance\_policies](#output\_key\_protect\_instance\_policies) | Instance Polices of the Key Protect instance |
