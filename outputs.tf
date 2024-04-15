@@ -12,6 +12,11 @@ output "key_protect_id" {
   description = "ID of the Key Protect instance"
 }
 
+output "key_protect_crn" {
+  value       = ibm_resource_instance.key_protect_instance.crn
+  description = "CRN of the Key Protect instance"
+}
+
 output "key_protect_name" {
   value       = ibm_resource_instance.key_protect_instance.name
   description = "Name of the Key Protect instance"
