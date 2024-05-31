@@ -30,7 +30,7 @@ module "key_protect_module" {
 
 module "kms_key_ring" {
   source        = "terraform-ibm-modules/kms-key-ring/ibm"
-  version       = "2.3.1"
+  version       = "2.4.0"
   instance_id   = module.key_protect_module.key_protect_guid
   key_ring_id   = "${var.prefix}-my-key-ring"
   endpoint_type = "private"
@@ -42,7 +42,7 @@ module "kms_key_ring" {
 
 module "ibm_kms_key" {
   source          = "terraform-ibm-modules/kms-key/ibm"
-  version         = "1.2.1"
+  version         = "1.2.3"
   kms_instance_id = module.key_protect_module.key_protect_guid
   key_name        = "${var.prefix}-root-key"
   kms_key_ring_id = module.kms_key_ring.key_ring_id
