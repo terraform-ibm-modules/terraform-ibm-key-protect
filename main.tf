@@ -73,6 +73,20 @@ resource "ibm_resource_tag" "key_protect_tag" {
 ##############################################################################
 # Context Based Restrictions
 ##############################################################################
+
+locals {
+  default_operations = [{
+    api_types = [
+      {
+        "api_type_id" : "crn:v1:bluemix:public:context-based-restrictions::::api-type:"
+      },
+      {
+        "api_type_id" : "crn:v1:bluemix:public:context-based-restrictions::::platform-api-type:"
+      }
+    ]
+  }]
+}
+
 module "cbr_rule" {
   count            = length(var.cbr_rules) > 0 ? length(var.cbr_rules) : 0
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module"
@@ -83,9 +97,8 @@ module "cbr_rule" {
   resources = [{
     attributes = [
       {
-        name     = "accountId"
-        value    = var.cbr_rules[count.index].account_id
-        operator = "stringEquals"
+        name  = "accountId"
+        value = var.cbr_rules[count.index].account_id
       },
       {
         name     = "serviceInstance"
@@ -93,12 +106,10 @@ module "cbr_rule" {
         operator = "stringEquals"
       },
       {
-        name     = "serviceName"
-        value    = "kms"
-        operator = "stringEquals"
+        name  = "serviceName"
+        value = "kms"
       }
     ]
+    operations = var.cbr_rules[count.index].operations == null ? local.default_operations : var.cbr_rules[count.index].operations
   }]
-
-
 }
