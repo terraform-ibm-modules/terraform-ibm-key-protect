@@ -110,6 +110,6 @@ module "cbr_rule" {
         value = "kms"
       }
     ]
-    operations = var.cbr_rules[count.index].operations == null ? local.default_operations : var.cbr_rules[count.index].operations
   }]
+   operations = var.cbr_rules[count.index].operations == null ? local.default_operations : var.cbr_rules[count.index].operations
 }
