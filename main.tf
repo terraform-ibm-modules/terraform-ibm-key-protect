@@ -88,7 +88,7 @@ locals {
 }
 
 module "cbr_rule" {
-  count            = length(var.cbr_rules) > 0 ? length(var.cbr_rules) : 0
+  count            = length(var.cbr_rules)
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module"
   version          = "1.23.0"
   rule_description = var.cbr_rules[count.index].description

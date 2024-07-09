@@ -35,3 +35,8 @@ output "kp_public_endpoint" {
   description = "Instance public endpoint URL"
   value       = local.kp_endpoints["endpoints.public"]
 }
+
+output "cbr_rule_ids" {
+  description = "CBR rule ids created to restrict Key Protect"
+  value       = module.cbr_rule[*].rule_id
+}
