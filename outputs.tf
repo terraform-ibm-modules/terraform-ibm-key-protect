@@ -38,5 +38,5 @@ output "kp_public_endpoint" {
 
 output "cbr_rule_ids" {
   description = "CBR rule ids created to restrict Key Protect"
-  value       = module.cbr_rule[*].rule_id
+  value       = length(module.cbr_rule[*]) > 0 ? module.cbr_rule[*].rule_id : null
 }
