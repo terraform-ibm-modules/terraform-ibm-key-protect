@@ -7,3 +7,4 @@ The following resources are provisioned by this example:
  - A new private key protect instance in the given resource group and region.
  - A new KMS key ring.
  - A new KMS root key in the newly created key ring.
+ - A context-based restriction (CBR) rule to only allow Key Protect to be accessible from Schematics

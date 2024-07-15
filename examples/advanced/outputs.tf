@@ -56,3 +56,13 @@ output "kms_key_ring_id" {
   description = "KMS Key Ring ID"
   value       = module.kms_key_ring.key_ring_id
 }
+
+output "cbr_rule_ids" {
+  description = "CBR rule ids created to restrict Key Protect"
+  value       = module.key_protect_module.cbr_rule_ids
+}
+
+output "cbr_zone_ids" {
+  description = "Zone ids created for CBR"
+  value       = module.cbr_zone[*].zone_id
+}

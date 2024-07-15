@@ -11,6 +11,33 @@ module "resource_group" {
 }
 
 ##############################################################################
+# Get Cloud Account ID
+##############################################################################
+
+data "ibm_iam_account_settings" "iam_account_settings" {
+}
+
+##############################################################################
+# Create CBR Zone
+##############################################################################
+
+# A network zone with Service reference to schematics
+module "cbr_zone" {
+  source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
+  version          = "1.23.0"
+  name             = "${var.prefix}-network-zone"
+  zone_description = "CBR Network zone for schematics"
+  account_id       = data.ibm_iam_account_settings.iam_account_settings.account_id
+  addresses = [{
+    type = "serviceRef"
+    ref = {
+      account_id   = data.ibm_iam_account_settings.iam_account_settings.account_id
+      service_name = "schematics"
+    }
+  }]
+}
+
+##############################################################################
 # Key Protect with Private Service Endpoint
 ##############################################################################
 
@@ -22,6 +49,20 @@ module "key_protect_module" {
   tags              = var.resource_tags
   access_tags       = var.access_tags
   allowed_network   = "private-only"
+  # CBR rule only allowing the Key Protect instance to be accessbile from Schematics
+  cbr_rules = [{
+    description      = "${var.prefix}-key-protect access only from schematics"
+    enforcement_mode = "enabled"
+    account_id       = data.ibm_iam_account_settings.iam_account_settings.account_id
+    rule_contexts = [{
+      attributes = [
+        {
+          name  = "networkZoneId"
+          value = module.cbr_zone.zone_id
+        }
+      ]
+    }]
+  }]
 }
 
 ##############################################################################
