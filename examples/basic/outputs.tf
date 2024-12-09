@@ -27,6 +27,11 @@ output "key_protect_name" {
   value       = module.key_protect_module.key_protect_name
 }
 
+output "key_protect_account_id" {
+  value       = module.key_protect_module.key_protect_account_id
+  description = "The account ID of the Key Protect instance."
+}
+
 output "key_protect_instance_policies" {
   description = "Instance policies of the Key Protect instance"
   value       = module.key_protect_module.key_protect_instance_policies
