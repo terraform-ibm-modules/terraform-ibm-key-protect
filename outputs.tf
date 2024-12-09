@@ -22,6 +22,11 @@ output "key_protect_name" {
   description = "Name of the Key Protect instance"
 }
 
+output "key_protect_account_id" {
+  value       = ibm_resource_instance.key_protect_instance.account_id
+  description = "The account ID of the Key Protect instance."
+}
+
 output "key_protect_instance_policies" {
   value       = local.instance_policies
   description = "Instance Polices of the Key Protect instance"
@@ -31,6 +36,7 @@ output "kp_private_endpoint" {
   description = "Instance private endpoint URL"
   value       = local.kp_endpoints["endpoints.private"]
 }
+
 output "kp_public_endpoint" {
   description = "Instance public endpoint URL"
   value       = local.kp_endpoints["endpoints.public"]
