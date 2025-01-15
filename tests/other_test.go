@@ -33,7 +33,7 @@ func TestPlanValidation(t *testing.T) {
 		"resource_group": resourceGroup,
 	}
 
-	_, err = terraform.ApplyE(t, options)
+	_, err = terraform.PlanE(t, options)
 
 	assert.NotNil(t, err, "This should have errored")
 }
