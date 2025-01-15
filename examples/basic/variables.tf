@@ -14,6 +14,12 @@ variable "prefix" {
   description = "Prefix to append to all resources created by this example"
 }
 
+variable "plan" {
+  type        = string
+  description = "Service plan of the Key Protect instance"
+  default     = "tiered-pricing"
+}
+
 variable "resource_group" {
   type        = string
   description = "An existing resource group name to use for this example. If unset a new resource group will be created"

@@ -18,6 +18,7 @@ module "key_protect_module" {
   source            = "../.."
   key_protect_name  = "${var.prefix}-kp"
   resource_group_id = module.resource_group.resource_group_id
+  plan              = var.plan
   region            = var.region
   tags              = var.resource_tags
   access_tags       = var.access_tags

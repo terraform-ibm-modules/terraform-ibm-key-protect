@@ -40,8 +40,8 @@ variable "plan" {
   default     = "tiered-pricing"
 
   validation {
-    condition     = can(regex("^tiered-pricing$", var.plan))
-    error_message = "Currently the only supported value for plan is 'tiered-pricing'."
+    condition     = contains(["tiered-pricing", "cross-region-resiliency"], var.plan)
+    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency'"
   }
 }
 

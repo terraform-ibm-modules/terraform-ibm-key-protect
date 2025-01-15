@@ -13,6 +13,10 @@ This module supports:
 - Enabling a [metrics policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-monitor-metrics) for the instance
 - Enabling a [key create and import access policy](https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess) for the instance
 
+***Key Protect Service Plans***
+
+The Key protect service offers two service plans for service instances, `tiered-pricing` and `cross-region-resiliency`. For more details on the available service plans, see [Key Protect pricing plan](https://cloud.ibm.com/docs/key-protect?topic=key-protect-pricing-plan).
+
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
