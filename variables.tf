@@ -36,12 +36,17 @@ variable "allowed_network" {
 
 variable "plan" {
   type        = string
-  description = "Plan for the Key Protect instance. Currently only 'tiered-pricing' is supported"
+  description = "Plan for the Key Protect instance. Valid plans are 'tiered-pricing' and 'cross-region-resiliency', for more information on these plans see [Key Protect pricing plan](https://cloud.ibm.com/docs/key-protect?topic=key-protect-pricing-plan)."
   default     = "tiered-pricing"
 
   validation {
     condition     = contains(["tiered-pricing", "cross-region-resiliency"], var.plan)
-    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency'"
+    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency'."
+  }
+
+  validation {
+    condition     = var.plan == "tiered-pricing" ? true : (var.plan == "cross-region-resiliency" && contains(["us-south", "eu-de", "jp-tok"], var.region))
+    error_message = "'cross-region-resiliency' is only available for the following regions: 'us-south', 'eu-de', 'jp-tok'."
   }
 }
 

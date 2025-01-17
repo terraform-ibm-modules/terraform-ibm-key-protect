@@ -5,9 +5,6 @@
 locals {
   kp_endpoints = { for key, value in ibm_resource_instance.key_protect_instance.extensions : key => value
   }
-
-  # tflint-ignore: terraform_unused_declarations
-  cross_region_validation = (var.plan == "cross-region-resiliency" && !contains(["us-south", "eu-de", "jp-tok"], var.region)) ? tobool("If `plan` is 'cross-region-resiliency', `region` must be one of: 'us-south', 'eu-de', 'jp-tok'") : true
 }
 
 resource "ibm_resource_instance" "key_protect_instance" {

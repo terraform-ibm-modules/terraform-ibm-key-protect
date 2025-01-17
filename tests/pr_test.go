@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -92,5 +93,43 @@ func TestRunUpgrade(t *testing.T) {
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
+	}
+}
+
+func TestPlanValidation(t *testing.T) {
+	t.Parallel()
+
+	validCrossRegionPlanLocations := []string{"us-south", "eu-de", "jp-tok"}
+	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
+
+	options := &terraform.Options{
+		TerraformDir: "../examples/basic",
+		Vars: map[string]interface{}{
+			"prefix":         "validate-plan",
+			"plan":           "cross-region-resiliency",
+			"resource_group": resourceGroup,
+		},
+		Upgrade: true,
+	}
+
+	_, initErr := terraform.InitE(t, options)
+
+	assert.Nil(t, initErr, "This should not have errored")
+
+	for _, validRegion := range validCrossRegionPlanLocations {
+		options.Vars["region"] = validRegion
+
+		output, err := terraform.PlanE(t, options)
+
+		assert.Nil(t, err, "This should not have errored")
+		assert.NotNil(t, output, "Expected some output")
+	}
+
+	for _, invalidRegion := range invalidCrossRegionPlanLocations {
+		options.Vars["region"] = invalidRegion
+
+		_, err := terraform.PlanE(t, options)
+
+		assert.NotNil(t, err, "This should have errored")
 	}
 }
