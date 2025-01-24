@@ -2,10 +2,12 @@
 package test
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
@@ -97,9 +99,9 @@ func TestRunUpgrade(t *testing.T) {
 }
 
 func TestPlanValidation(t *testing.T) {
-	t.Parallel()
-
+	// Regions that support Cross Region Resiliency plan
 	validCrossRegionPlanLocations := []string{"us-south", "eu-de", "jp-tok"}
+	// Regions that don't support Cross Region Resiliency plan
 	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
 
 	options := &terraform.Options{
@@ -109,27 +111,30 @@ func TestPlanValidation(t *testing.T) {
 			"plan":           "cross-region-resiliency",
 			"resource_group": resourceGroup,
 		},
+		Logger:  logger.Discard,
 		Upgrade: true,
+		NoColor: true,
 	}
 
 	_, initErr := terraform.InitE(t, options)
-
 	assert.Nil(t, initErr, "This should not have errored")
 
 	for _, validRegion := range validCrossRegionPlanLocations {
 		options.Vars["region"] = validRegion
-
-		output, err := terraform.PlanE(t, options)
-
-		assert.Nil(t, err, "This should not have errored")
-		assert.NotNil(t, output, "Expected some output")
+		t.Run(validRegion, func(t *testing.T) {
+			output, err := terraform.PlanE(t, options)
+			assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
+			assert.NotNil(t, output, "Expected some output")
+		})
 	}
 
 	for _, invalidRegion := range invalidCrossRegionPlanLocations {
 		options.Vars["region"] = invalidRegion
-
-		_, err := terraform.PlanE(t, options)
-
-		assert.NotNil(t, err, "This should have errored")
+		t.Run(invalidRegion, func(t *testing.T) {
+			fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
+			_, err := terraform.PlanE(t, options)
+			fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
+			assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
+		})
 	}
 }
