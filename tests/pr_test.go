@@ -104,37 +104,41 @@ func TestPlanValidation(t *testing.T) {
 	// Regions that don't support Cross Region Resiliency plan
 	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
 
-	options := &terraform.Options{
-		TerraformDir: "../examples/basic",
-		Vars: map[string]interface{}{
-			"prefix":         "validate-plan",
-			"plan":           "cross-region-resiliency",
-			"resource_group": resourceGroup,
-		},
-		Logger:  logger.Discard,
-		Upgrade: true,
-		NoColor: true,
+	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
+		Testing:       t,
+		TerraformDir:  terraformDir,
+		Prefix:        "validate-plan",
+		ResourceGroup: resourceGroup,
+		Region:        "us-south", // skip VPC region picker
+	})
+	options.TestSetup()
+	options.TerraformOptions.NoColor = true
+	options.TerraformOptions.Logger = logger.Discard
+	options.TerraformOptions.Vars = map[string]interface{}{
+		"prefix":         options.Prefix,
+		"plan":           "cross-region-resiliency",
+		"resource_group": options.ResourceGroup,
 	}
 
-	_, initErr := terraform.InitE(t, options)
-	assert.Nil(t, initErr, "This should not have errored")
+	_, initErr := terraform.InitE(t, options.TerraformOptions)
+	if assert.Nil(t, initErr, "This should not have errored") {
+		for _, validRegion := range validCrossRegionPlanLocations {
+			options.TerraformOptions.Vars["region"] = validRegion
+			t.Run(validRegion, func(t *testing.T) {
+				output, err := terraform.PlanE(t, options.TerraformOptions)
+				assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
+				assert.NotNil(t, output, "Expected some output")
+			})
+		}
 
-	for _, validRegion := range validCrossRegionPlanLocations {
-		options.Vars["region"] = validRegion
-		t.Run(validRegion, func(t *testing.T) {
-			output, err := terraform.PlanE(t, options)
-			assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
-			assert.NotNil(t, output, "Expected some output")
-		})
-	}
-
-	for _, invalidRegion := range invalidCrossRegionPlanLocations {
-		options.Vars["region"] = invalidRegion
-		t.Run(invalidRegion, func(t *testing.T) {
-			fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
-			_, err := terraform.PlanE(t, options)
-			fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
-			assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
-		})
+		for _, invalidRegion := range invalidCrossRegionPlanLocations {
+			options.TerraformOptions.Vars["region"] = invalidRegion
+			t.Run(invalidRegion, func(t *testing.T) {
+				fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
+				_, err := terraform.PlanE(t, options.TerraformOptions)
+				fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
+				assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
+			})
+		}
 	}
 }
