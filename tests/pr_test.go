@@ -2,10 +2,13 @@
 package test
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -92,5 +95,50 @@ func TestRunUpgrade(t *testing.T) {
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
+	}
+}
+
+func TestPlanValidation(t *testing.T) {
+	// Regions that support Cross Region Resiliency plan
+	validCrossRegionPlanLocations := []string{"us-south", "eu-de", "jp-tok"}
+	// Regions that don't support Cross Region Resiliency plan
+	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
+
+	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
+		Testing:       t,
+		TerraformDir:  terraformDir,
+		Prefix:        "validate-plan",
+		ResourceGroup: resourceGroup,
+		Region:        "us-south", // skip VPC region picker
+	})
+	options.TestSetup()
+	options.TerraformOptions.NoColor = true
+	options.TerraformOptions.Logger = logger.Discard
+	options.TerraformOptions.Vars = map[string]interface{}{
+		"prefix":         options.Prefix,
+		"plan":           "cross-region-resiliency",
+		"resource_group": options.ResourceGroup,
+	}
+
+	_, initErr := terraform.InitE(t, options.TerraformOptions)
+	if assert.Nil(t, initErr, "This should not have errored") {
+		for _, validRegion := range validCrossRegionPlanLocations {
+			options.TerraformOptions.Vars["region"] = validRegion
+			t.Run(validRegion, func(t *testing.T) {
+				output, err := terraform.PlanE(t, options.TerraformOptions)
+				assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
+				assert.NotNil(t, output, "Expected some output")
+			})
+		}
+
+		for _, invalidRegion := range invalidCrossRegionPlanLocations {
+			options.TerraformOptions.Vars["region"] = invalidRegion
+			t.Run(invalidRegion, func(t *testing.T) {
+				fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
+				_, err := terraform.PlanE(t, options.TerraformOptions)
+				fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
+				assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
+			})
+		}
 	}
 }
