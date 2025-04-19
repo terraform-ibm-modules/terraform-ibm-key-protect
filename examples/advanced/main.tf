@@ -24,7 +24,7 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 # A network zone with Service reference to schematics
 module "cbr_zone" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
-  version          = "1.29.0"
+  version          = "1.30.0"
   name             = "${var.prefix}-network-zone"
   zone_description = "CBR Network zone for schematics"
   account_id       = data.ibm_iam_account_settings.iam_account_settings.account_id
