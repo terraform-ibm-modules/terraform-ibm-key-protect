@@ -18,8 +18,8 @@ This module supports:
 ## Overview
 * [terraform-ibm-key-protect](#terraform-ibm-key-protect)
 * [Examples](./examples)
-    * [Advanced private example](./examples/advanced)
-    * [Basic example](./examples/basic)
+    * <div style="display: inline-block;"><a href="./examples/advanced">Advanced private example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=kp-advanced-example&repository=github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/advanced" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
+    * <div style="display: inline-block;"><a href="./examples/basic">Basic example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=kp-basic-example&repository=github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/basic" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
@@ -69,7 +69,7 @@ To attach access management tags to resources in this module, you need the follo
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.33.7 |
+| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.33.8 |
 
 ### Resources
 
