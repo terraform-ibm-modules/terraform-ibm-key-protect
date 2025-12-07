@@ -83,7 +83,7 @@ module "kms_key_ring" {
 
 module "ibm_kms_key" {
   source          = "terraform-ibm-modules/kms-key/ibm"
-  version         = "1.4.7"
+  version         = "1.4.8"
   kms_instance_id = module.key_protect_module.key_protect_guid
   key_name        = "${var.prefix}-root-key"
   kms_key_ring_id = module.kms_key_ring.key_ring_id
