@@ -4,7 +4,7 @@
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.4.5"
+  version = "1.4.6"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -71,7 +71,7 @@ module "key_protect_module" {
 
 module "kms_key_ring" {
   source        = "terraform-ibm-modules/kms-key-ring/ibm"
-  version       = "2.6.9"
+  version       = "2.6.11"
   instance_id   = module.key_protect_module.key_protect_guid
   key_ring_id   = "${var.prefix}-my-key-ring"
   endpoint_type = "private"
