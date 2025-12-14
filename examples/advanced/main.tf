@@ -71,7 +71,7 @@ module "key_protect_module" {
 
 module "kms_key_ring" {
   source        = "terraform-ibm-modules/kms-key-ring/ibm"
-  version       = "2.6.13"
+  version       = "2.6.14"
   instance_id   = module.key_protect_module.key_protect_guid
   key_ring_id   = "${var.prefix}-my-key-ring"
   endpoint_type = "private"
