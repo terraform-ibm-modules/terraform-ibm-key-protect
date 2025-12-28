@@ -24,7 +24,7 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 # A network zone with Service reference to schematics
 module "cbr_zone" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
-  version          = "1.35.4"
+  version          = "1.35.5"
   name             = "${var.prefix}-network-zone"
   zone_description = "CBR Network zone for schematics"
   account_id       = data.ibm_iam_account_settings.iam_account_settings.account_id
@@ -71,7 +71,7 @@ module "key_protect_module" {
 
 module "kms_key_ring" {
   source        = "terraform-ibm-modules/kms-key-ring/ibm"
-  version       = "2.6.24"
+  version       = "2.6.25"
   instance_id   = module.key_protect_module.key_protect_guid
   key_ring_id   = "${var.prefix}-my-key-ring"
   endpoint_type = "private"
@@ -83,7 +83,7 @@ module "kms_key_ring" {
 
 module "ibm_kms_key" {
   source          = "terraform-ibm-modules/kms-key/ibm"
-  version         = "1.4.21"
+  version         = "1.4.22"
   kms_instance_id = module.key_protect_module.key_protect_guid
   key_name        = "${var.prefix}-root-key"
   kms_key_ring_id = module.kms_key_ring.key_ring_id
