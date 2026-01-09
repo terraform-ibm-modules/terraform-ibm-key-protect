@@ -17,6 +17,23 @@ resource "ibm_resource_instance" "key_protect_instance" {
   parameters = {
     allowed_network : var.allowed_network
   }
+
+  lifecycle {
+    postcondition {
+      condition     = can(self.status) && self.status == "active"
+      error_message = "Key Protect instance '${var.key_protect_name}' failed to provision. Status is '${try(self.status, "unknown")}', expected 'active'. Check IBM Cloud console for details."
+    }
+
+    postcondition {
+      condition     = can(self.guid) && self.guid != null && self.guid != ""
+      error_message = "Key Protect instance '${var.key_protect_name}' was created but has no GUID. This indicates a provisioning error and will prevent policies and CBR rules from being created."
+    }
+
+    postcondition {
+      condition     = can(self.crn) && self.crn != null && self.crn != ""
+      error_message = "Key Protect instance '${var.key_protect_name}' was created but has no CRN. This will prevent access tags from being attached."
+    }
+  }
 }
 
 ##############################################################################
@@ -112,4 +129,36 @@ module "cbr_rule" {
     ]
   }]
   operations = var.cbr_rules[count.index].operations == null ? local.default_operations : var.cbr_rules[count.index].operations
+}
+
+check "key_protect_instance_state" {
+  data "ibm_resource_instance" "kp_instance_state" {
+    identifier = ibm_resource_instance.key_protect_instance.id
+  }
+
+  assert {
+    condition = (
+      can(data.ibm_resource_instance.kp_instance_state.status) &&
+      data.ibm_resource_instance.kp_instance_state.status == "active"
+    )
+    error_message = "Key Protect instance '${var.key_protect_name}' is not in active status. Current status: ${try(data.ibm_resource_instance.kp_instance_state.status, "unknown")}. This may indicate a provisioning or operational issue."
+  }
+
+  assert {
+    condition = (
+      can(data.ibm_resource_instance.kp_instance_state.guid) &&
+      data.ibm_resource_instance.kp_instance_state.guid != null &&
+      data.ibm_resource_instance.kp_instance_state.guid != ""
+    )
+    error_message = "Key Protect instance '${var.key_protect_name}' GUID is missing or empty. GUID: ${try(data.ibm_resource_instance.kp_instance_state.guid, "null")}"
+  }
+
+  assert {
+    condition = (
+      can(data.ibm_resource_instance.kp_instance_state.crn) &&
+      data.ibm_resource_instance.kp_instance_state.crn != null &&
+      data.ibm_resource_instance.kp_instance_state.crn != ""
+    )
+    error_message = "Key Protect instance '${var.key_protect_name}' CRN is missing or empty."
+  }
 }
