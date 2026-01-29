@@ -9,5 +9,4 @@ compatible_module "resource_group" {
 
 compatible_variables {
   resource_group_id   = "resource_group.output.resource_group_id"
-  resource_group_name = "resource_group.output.name"
 }
