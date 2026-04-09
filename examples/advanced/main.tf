@@ -4,7 +4,7 @@
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.4.8"
+  version = "1.6.0"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -49,7 +49,7 @@ module "key_protect_module" {
   tags              = var.resource_tags
   access_tags       = var.access_tags
   allowed_network   = "private-only"
-  # CBR rule only allowing the Key Protect instance to be accessbile from Schematics
+  # CBR rule only allowing the Key Protect instance to be accessible from Schematics
   cbr_rules = [{
     description      = "${var.prefix}-key-protect access only from schematics"
     enforcement_mode = "enabled"
