@@ -5,9 +5,20 @@
 locals {
   kp_endpoints = { for key, value in ibm_resource_instance.key_protect_instance.extensions : key => value
   }
+  is_dedicated = var.plan == "dedicated" ? 1 : 0
+}
+
+module "dedicated_kp_instance" {
+  source = "./modules/kp-dedicated"
+  count = local.is_dedicated ? 1 : 0
+  resource_group_id = var.resource_group_id
+  key_protect_name = var.key_protect_name
+  region = var.region
+  tags = var.tags
 }
 
 resource "ibm_resource_instance" "key_protect_instance" {
+  count = local.is_dedicated ? 0 : 1
   name              = var.key_protect_name
   resource_group_id = var.resource_group_id
   service           = "kms"
@@ -24,7 +35,8 @@ resource "ibm_resource_instance" "key_protect_instance" {
 ##############################################################################
 
 resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
-  instance_id   = ibm_resource_instance.key_protect_instance.guid
+  count = local.is_dedicated ? 0 : 1
+  instance_id   = ibm_resource_instance.key_protect_instance[0].guid
   endpoint_type = var.allowed_network == "private-only" ? "private" : "public"
   rotation {
     enabled        = var.rotation_enabled
@@ -50,12 +62,12 @@ locals {
   # instance policy output is not formatted correctly, cleanup done in this local
   # tracking in issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5163
   instance_policies = {
-    dual_auth_delete         = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.dual_auth_delete : obj if obj != null]
-    id                       = ibm_kms_instance_policies.key_protect_instance_policies.id
-    instance_id              = ibm_kms_instance_policies.key_protect_instance_policies.instance_id
-    key_create_import_access = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.key_create_import_access : obj if obj != null]
-    metrics                  = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.metrics : obj if obj != null]
-    rotation                 = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.rotation : obj if obj != null]
+    dual_auth_delete         = [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].dual_auth_delete : obj if obj != null]
+    id                       = ibm_kms_instance_policies.key_protect_instance_policies[0].id
+    instance_id              = ibm_kms_instance_policies.key_protect_instance_policies[0].instance_id
+    key_create_import_access = [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].key_create_import_access : obj if obj != null]
+    metrics                  = [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].metrics : obj if obj != null]
+    rotation                 = [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].rotation : obj if obj != null]
   }
 }
 
@@ -65,7 +77,7 @@ locals {
 
 resource "ibm_resource_tag" "key_protect_tag" {
   count       = length(var.access_tags) == 0 ? 0 : 1
-  resource_id = ibm_resource_instance.key_protect_instance.crn
+  resource_id = ibm_resource_instance.key_protect_instance[0].crn
   tags        = var.access_tags
   tag_type    = "access"
 }
@@ -102,7 +114,7 @@ module "cbr_rule" {
       },
       {
         name     = "serviceInstance"
-        value    = ibm_resource_instance.key_protect_instance.guid
+        value    = ibm_resource_instance.key_protect_instance[0].guid
         operator = "stringEquals"
       },
       {
