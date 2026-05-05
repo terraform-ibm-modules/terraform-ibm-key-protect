@@ -46,7 +46,7 @@ module "key_protect_module" {
   key_protect_name  = "${var.prefix}-kp"
   resource_group_id = module.resource_group.resource_group_id
   region            = var.region
-  tags              = var.resource_tags
+  resource_tags     = var.resource_tags
   access_tags       = var.access_tags
   allowed_network   = "private-only"
   # CBR rule only allowing the Key Protect instance to be accessible from Schematics
