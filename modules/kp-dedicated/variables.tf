@@ -24,25 +24,25 @@ variable "tags" {
 }
 
 variable "admin_pass" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "keyshare_pass_1" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "keyshare_pass_2" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "master_key_name" {
-  type = string
+  type        = string
   description = ""
-  default = "mskey"
+  default     = "mskey"
 }

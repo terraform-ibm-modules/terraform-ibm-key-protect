@@ -17,23 +17,15 @@ This module supports:
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
-<ul>
-  <li><a href="#terraform-ibm-key-protect">terraform-ibm-key-protect</a></li>
-  <li><a href="./examples">Examples</a>
-    <ul>
-      <li>
-        <a href="./examples/advanced">Advanced private example</a>
-        <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=key-protect-advanced-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/advanced"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
-      </li>
-      <li>
-        <a href="./examples/basic">Basic example</a>
-        <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=key-protect-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with%20IBM%20Cloud%20Schematics-0f62fe?style=flat&logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
-      </li>
-    </ul>
-    ℹ️ Ctrl/Cmd+Click or right-click on the Schematics deploy button to open in a new tab.
-  </li>
-  <li><a href="#contributing">Contributing</a></li>
-</ul>
+* [terraform-ibm-key-protect](#terraform-ibm-key-protect)
+* [Submodules](./modules)
+    * [kp-dedicated](./modules/kp-dedicated)
+* [Examples](./examples)
+:information_source: Ctrl/Cmd+Click or right-click on the Schematics deploy button to open in a new tab
+    * <a href="./examples/advanced">Advanced private example</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=key-protect-advanced-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/advanced"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+    * <a href="./examples/basic">Basic example</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=key-protect-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+    * <a href="./examples/dedicated">Basic example</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=key-protect-dedicated-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-key-protect/tree/main/examples/dedicated"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+* [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
 ## terraform-ibm-key-protect
@@ -83,6 +75,7 @@ To attach access management tags to resources in this module, you need the follo
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.36.2 |
+| <a name="module_dedicated_kp_instance"></a> [dedicated\_kp\_instance](#module\_dedicated\_kp\_instance) | ./modules/kp-dedicated | n/a |
 
 ### Resources
 
@@ -97,12 +90,16 @@ To attach access management tags to resources in this module, you need the follo
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_access_tags"></a> [access\_tags](#input\_access\_tags) | A list of access tags to apply to the Key Protect instance created by the module. For more information, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial. | `list(string)` | `[]` | no |
+| <a name="input_admin_pass"></a> [admin\_pass](#input\_admin\_pass) | n/a | `string` | n/a | yes |
 | <a name="input_allowed_network"></a> [allowed\_network](#input\_allowed\_network) | Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private' | `string` | `"public-and-private"` | no |
 | <a name="input_cbr_rules"></a> [cbr\_rules](#input\_cbr\_rules) | The context-based restrictions rule to create. Only one rule is allowed. | <pre>list(object({<br/>    description = string<br/>    account_id  = string<br/>    rule_contexts = list(object({<br/>      attributes = optional(list(object({<br/>        name  = string<br/>        value = string<br/>    }))) }))<br/>    enforcement_mode = string<br/>    operations = optional(list(object({<br/>      api_types = list(object({<br/>        api_type_id = string<br/>      }))<br/>    })))<br/>  }))</pre> | `[]` | no |
 | <a name="input_dual_auth_delete_enabled"></a> [dual\_auth\_delete\_enabled](#input\_dual\_auth\_delete\_enabled) | If set to true, Key Protect enables a dual authorization policy on the instance. Note: Once the dual authorization policy is set on the instance, it cannot be reverted. An instance with dual authorization policy enabled cannot be destroyed using Terraform. | `bool` | `false` | no |
 | <a name="input_key_create_import_access_enabled"></a> [key\_create\_import\_access\_enabled](#input\_key\_create\_import\_access\_enabled) | If set to true, Key Protect enables a key create import access policy on the instance | `bool` | `true` | no |
 | <a name="input_key_create_import_access_settings"></a> [key\_create\_import\_access\_settings](#input\_key\_create\_import\_access\_settings) | Key create import access policy settings to configure if var.enable\_key\_create\_import\_access\_policy is true. For more info see https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess | <pre>object({<br/>    create_root_key     = optional(bool, true)<br/>    create_standard_key = optional(bool, true)<br/>    import_root_key     = optional(bool, true)<br/>    import_standard_key = optional(bool, true)<br/>    enforce_token       = optional(bool, false)<br/>  })</pre> | `{}` | no |
 | <a name="input_key_protect_name"></a> [key\_protect\_name](#input\_key\_protect\_name) | The name to give the Key Protect instance that will be provisioned | `string` | n/a | yes |
+| <a name="input_keyshare_pass_1"></a> [keyshare\_pass\_1](#input\_keyshare\_pass\_1) | n/a | `string` | n/a | yes |
+| <a name="input_keyshare_pass_2"></a> [keyshare\_pass\_2](#input\_keyshare\_pass\_2) | n/a | `string` | n/a | yes |
+| <a name="input_master_key_name"></a> [master\_key\_name](#input\_master\_key\_name) | n/a | `string` | `"mskey"` | no |
 | <a name="input_metrics_enabled"></a> [metrics\_enabled](#input\_metrics\_enabled) | If set to true, Key Protect enables metrics on the Key Protect instance. In order to view metrics, you will need a Monitoring (Sysdig) instance that is located in the same region as the Key Protect instance. Once you provision the Monitoring instance, you will need to enable platform metrics. | `bool` | `true` | no |
 | <a name="input_plan"></a> [plan](#input\_plan) | Plan for the Key Protect instance. Valid plans are 'tiered-pricing' and 'cross-region-resiliency', for more information on these plans see [Key Protect pricing plan](https://cloud.ibm.com/docs/key-protect?topic=key-protect-pricing-plan). | `string` | `"tiered-pricing"` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region where the Key Protect instance will be provisioned | `string` | n/a | yes |
@@ -122,8 +119,6 @@ To attach access management tags to resources in this module, you need the follo
 | <a name="output_key_protect_id"></a> [key\_protect\_id](#output\_key\_protect\_id) | ID of the Key Protect instance |
 | <a name="output_key_protect_instance_policies"></a> [key\_protect\_instance\_policies](#output\_key\_protect\_instance\_policies) | Instance Polices of the Key Protect instance |
 | <a name="output_key_protect_name"></a> [key\_protect\_name](#output\_key\_protect\_name) | Name of the Key Protect instance |
-| <a name="output_kp_private_endpoint"></a> [kp\_private\_endpoint](#output\_kp\_private\_endpoint) | Instance private endpoint URL |
-| <a name="output_kp_public_endpoint"></a> [kp\_public\_endpoint](#output\_kp\_public\_endpoint) | Instance public endpoint URL |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 <!-- BEGIN CONTRIBUTING HOOK -->
 

@@ -9,20 +9,20 @@ locals {
 }
 
 module "dedicated_kp_instance" {
-  source = "./modules/kp-dedicated"
-  count = local.is_dedicated ? 1 : 0
+  source            = "./modules/kp-dedicated"
+  count             = local.is_dedicated ? 1 : 0
   resource_group_id = var.resource_group_id
-  key_protect_name = var.key_protect_name
-  region = var.region
-  tags = var.tags
-  admin_pass = var.admin_pass
-  keyshare_pass_1 = var.keyshare_pass_1
-  keyshare_pass_2 = var.keyshare_pass_2
-  master_key_name = var.master_key_name
+  key_protect_name  = var.key_protect_name
+  region            = var.region
+  tags              = var.tags
+  admin_pass        = var.admin_pass
+  keyshare_pass_1   = var.keyshare_pass_1
+  keyshare_pass_2   = var.keyshare_pass_2
+  master_key_name   = var.master_key_name
 }
 
 resource "ibm_resource_instance" "key_protect_instance" {
-  count = local.is_dedicated ? 0 : 1
+  count             = local.is_dedicated ? 0 : 1
   name              = var.key_protect_name
   resource_group_id = var.resource_group_id
   service           = "kms"

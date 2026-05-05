@@ -45,19 +45,19 @@ variable "plan" {
   }
 
   validation {
-  condition = (
-    var.plan == "tiered-pricing" ||
+    condition = (
+      var.plan == "tiered-pricing" ||
 
-    (var.plan == "cross-region-resiliency" &&
-      contains(["us-south", "eu-de", "jp-tok"], var.region)
-    ) ||
+      (var.plan == "cross-region-resiliency" &&
+        contains(["us-south", "eu-de", "jp-tok"], var.region)
+      ) ||
 
-    (var.plan == "dedicated" &&
-      contains(["us-south", "eu-de", "us-east"], var.region)
+      (var.plan == "dedicated" &&
+        contains(["us-south", "eu-de", "us-east"], var.region)
+      )
     )
-  )
-  error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east."
-}
+    error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east."
+  }
 }
 
 variable "rotation_enabled" {
@@ -150,25 +150,25 @@ variable "cbr_rules" {
 }
 
 variable "admin_pass" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "keyshare_pass_1" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "keyshare_pass_2" {
-  type = string
+  type        = string
   description = ""
-  sensitive = true
+  sensitive   = true
 }
 
 variable "master_key_name" {
-  type = string
+  type        = string
   description = ""
-  default = "mskey"
+  default     = "mskey"
 }
