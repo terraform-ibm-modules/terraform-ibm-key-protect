@@ -7,21 +7,19 @@ echo "Starting Key Protect Dedicated Initialization..."
 # ============================
 # REQUIRED ENV VARIABLES
 # ============================
-# KP_INSTANCE_ID
-# KP_TARGET_ADDR
-# ADMIN_KEY_FILE
-# ADMIN_PASS
-# KEYSHARE_1
-# KEYSHARE_2
-# KEYSHARE_PASS_1
-# KEYSHARE_PASS_2
-# MASTER_KEY_NAME
-
-# Validate inputs
 : "${KP_INSTANCE_ID:?Need KP_INSTANCE_ID}"
 : "${KP_TARGET_ADDR:?Need KP_TARGET_ADDR}"
-: "${ADMIN_KEY_FILE:?Need ADMIN_KEY_FILE}"
 : "${ADMIN_PASS:?Need ADMIN_PASS}"
+: "${KEYSHARE_PASS_1:?Need KEYSHARE_PASS_1}"
+: "${KEYSHARE_PASS_2:?Need KEYSHARE_PASS_2}"
+: "${MASTER_KEY_NAME:?Need MASTER_KEY_NAME}"
+
+# ============================
+# INTERNAL VARIABLES (managed by script)
+# ============================
+ADMIN_KEY_FILE="./admin.key"
+KEYSHARE_1="./ks1"
+KEYSHARE_2="./ks2"
 
 export KP_INSTANCE_ID
 export KP_TARGET_ADDR
@@ -32,11 +30,11 @@ echo "Endpoint: $KP_TARGET_ADDR"
 # ============================
 # WAIT FOR CRYPTO UNITS
 # ============================
-echo "Waiting for crypto units to be available..."
+echo "Waiting for crypto units..."
 sleep 60
 
 # ============================
-# GENERATE ADMIN KEY (if not exists)
+# GENERATE ADMIN KEY
 # ============================
 if [ ! -f "$ADMIN_KEY_FILE" ]; then
   echo "Generating admin key..."
@@ -56,7 +54,7 @@ ibmcloud kp crypto-unit claim \
   --credential "$ADMIN_KEY_FILE" || true
 
 # ============================
-# GENERATE MASTER KEY (if not exists)
+# GENERATE MASTER KEY SHARES
 # ============================
 if [ ! -f "$KEYSHARE_1" ] || [ ! -f "$KEYSHARE_2" ]; then
   echo "Generating master key shares..."

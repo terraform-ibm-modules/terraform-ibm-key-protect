@@ -40,14 +40,24 @@ variable "plan" {
   default     = "tiered-pricing"
 
   validation {
-    condition     = contains(["tiered-pricing", "cross-region-resiliency"], var.plan)
-    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency'."
+    condition     = contains(["tiered-pricing", "cross-region-resiliency", "dedicated"], var.plan)
+    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency' and 'dedicated'."
   }
 
   validation {
-    condition     = var.plan == "tiered-pricing" ? true : (var.plan == "cross-region-resiliency" && contains(["us-south", "eu-de", "jp-tok"], var.region))
-    error_message = "'cross-region-resiliency' is only available for the following regions: 'us-south', 'eu-de', 'jp-tok'."
-  }
+  condition = (
+    var.plan == "tiered-pricing" ||
+
+    (var.plan == "cross-region-resiliency" &&
+      contains(["us-south", "eu-de", "jp-tok"], var.region)
+    ) ||
+
+    (var.plan == "dedicated" &&
+      contains(["us-south", "eu-de", "us-east"], var.region)
+    )
+  )
+  error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east."
+}
 }
 
 variable "rotation_enabled" {
@@ -137,4 +147,28 @@ variable "cbr_rules" {
     condition     = length(var.cbr_rules) <= 1
     error_message = "Only one CBR rule is allowed."
   }
+}
+
+variable "admin_pass" {
+  type = string
+  description = ""
+  sensitive = true
+}
+
+variable "keyshare_pass_1" {
+  type = string
+  description = ""
+  sensitive = true
+}
+
+variable "keyshare_pass_2" {
+  type = string
+  description = ""
+  sensitive = true
+}
+
+variable "master_key_name" {
+  type = string
+  description = ""
+  default = "mskey"
 }
