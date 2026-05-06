@@ -3,10 +3,10 @@
 ##############################################################################
 
 locals {
-  kp_endpoints = { for key, value in ibm_resource_instance.key_protect_instance[0].extensions : key => value
+  kp_endpoints = local.is_dedicated ? null : { for key, value in ibm_resource_instance.key_protect_instance[0].extensions : key => value
   }
-  kp_endpoints_dedicated = { for key, value in ibm_resource_instance.dedicated_key_protect_instance[0].extensions : key => value
-  }
+  kp_endpoints_dedicated = local.is_dedicated ? { for key, value in ibm_resource_instance.dedicated_key_protect_instance[0].extensions : key => value
+  } : null
   is_dedicated = var.plan == "dedicated"
 }
 
