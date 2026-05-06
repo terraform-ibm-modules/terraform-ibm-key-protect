@@ -58,6 +58,28 @@ func TestRunBasicExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
+func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions {
+	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
+		Testing:       t,
+		TerraformDir:  "examples/dedicated",
+		Prefix:        prefix,
+		ResourceGroup: resourceGroup,
+		TerraformVars: map[string]interface{}{
+			"access_tags": permanentResources["accessTags"],
+		},
+	})
+	return options
+}
+
+func TestRunDedicatedExample(t *testing.T) {
+	t.Parallel()
+
+	options := setupOptionsDedicated(t, "kp-d")
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
 func TestRunAdvanceExample(t *testing.T) {
 	t.Parallel()
 

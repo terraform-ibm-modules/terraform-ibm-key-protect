@@ -31,27 +31,3 @@ variable "access_tags" {
   description = "Optional list of access management tags to add to the Key Protect instance"
   default     = []
 }
-
-variable "admin_pass" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "keyshare_pass_1" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "keyshare_pass_2" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "master_key_name" {
-  type        = string
-  description = ""
-  default     = "mskey"
-}

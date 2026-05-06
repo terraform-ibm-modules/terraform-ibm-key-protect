@@ -22,8 +22,4 @@ module "key_protect_module" {
   region            = var.region
   tags              = var.resource_tags
   access_tags       = var.access_tags
-  admin_pass        = var.admin_pass
-  keyshare_pass_1   = var.keyshare_pass_1
-  keyshare_pass_2   = var.keyshare_pass_2
-  master_key_name   = var.master_key_name
 }

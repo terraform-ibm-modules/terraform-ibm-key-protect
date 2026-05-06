@@ -25,7 +25,7 @@ variable "tags" {
 
 variable "allowed_network" {
   type        = string
-  description = "Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'"
+  description = "Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'. This can be set for only 'tiered-pricing' and 'cross-region-resiliency' plans."
   default     = "public-and-private"
 
   validation {
@@ -147,28 +147,4 @@ variable "cbr_rules" {
     condition     = length(var.cbr_rules) <= 1
     error_message = "Only one CBR rule is allowed."
   }
-}
-
-variable "admin_pass" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "keyshare_pass_1" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "keyshare_pass_2" {
-  type        = string
-  description = ""
-  sensitive   = true
-}
-
-variable "master_key_name" {
-  type        = string
-  description = ""
-  default     = "mskey"
 }
