@@ -17,7 +17,7 @@ resource "ibm_resource_instance" "key_protect_instance" {
   service           = "kms"
   plan              = var.plan
   location          = var.region
-  tags              = var.tags
+  tags              = var.resource_tags
   parameters = {
     allowed_network : var.allowed_network
   }
@@ -30,7 +30,7 @@ resource "ibm_resource_instance" "dedicated_key_protect_instance" {
   service           = "kms"
   plan              = "dedicated"
   location          = var.region
-  tags              = var.tags
+  tags              = var.resource_tags
 }
 
 ##############################################################################
@@ -78,7 +78,13 @@ locals {
 # Attach Access Tags
 ##############################################################################
 
+data "ibm_iam_access_tag" "access_tag" {
+  for_each = length(var.access_tags) != 0 ? toset(var.access_tags) : []
+  name     = each.value
+}
+
 resource "ibm_resource_tag" "key_protect_tag" {
+  depends_on  = [data.ibm_iam_access_tag.access_tag] # Force dependency on data source validation to ensure access_tags exist and are valid before use.
   count       = length(var.access_tags) == 0 ? 0 : 1
   resource_id = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].crn : ibm_resource_instance.key_protect_instance[0].crn
   tags        = var.access_tags
