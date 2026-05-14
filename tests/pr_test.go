@@ -19,6 +19,7 @@ import (
 const resourceGroup = "geretain-test-key-protect"
 const terraformDir = "examples/basic"
 const advancedExampleTerraformDir = "examples/advanced"
+const dedicatedKPDir = "examples/dedicated"
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -53,6 +54,35 @@ func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
 	options := setupOptions(t, "kp-basic")
+	output, err := options.RunTestConsistency()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
+var dedicatedRegions = []string{
+	"us-south",
+	"eu-de",
+	"us-east",
+}
+
+func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions {
+	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
+		Testing:       t,
+		TerraformDir:  dedicatedKPDir,
+		Prefix:        prefix,
+		ResourceGroup: resourceGroup,
+		TerraformVars: map[string]interface{}{
+			"access_tags": permanentResources["accessTags"],
+			"region":      dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))],
+		},
+	})
+	return options
+}
+
+func TestRunDedicatedExample(t *testing.T) {
+	t.Parallel()
+
+	options := setupOptionsDedicated(t, "kp-d")
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")

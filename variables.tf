@@ -29,7 +29,7 @@ variable "resource_tags" {
 
 variable "allowed_network" {
   type        = string
-  description = "Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'"
+  description = "Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'. This can be set for only 'tiered-pricing' and 'cross-region-resiliency' plans."
   default     = "public-and-private"
 
   validation {
@@ -44,13 +44,23 @@ variable "plan" {
   default     = "tiered-pricing"
 
   validation {
-    condition     = contains(["tiered-pricing", "cross-region-resiliency"], var.plan)
-    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency'."
+    condition     = contains(["tiered-pricing", "cross-region-resiliency", "dedicated"], var.plan)
+    error_message = "`plan` must be one of: 'tiered-pricing', 'cross-region-resiliency' and 'dedicated'."
   }
 
   validation {
-    condition     = var.plan == "tiered-pricing" ? true : (var.plan == "cross-region-resiliency" && contains(["us-south", "eu-de", "jp-tok"], var.region))
-    error_message = "'cross-region-resiliency' is only available for the following regions: 'us-south', 'eu-de', 'jp-tok'."
+    condition = (
+      var.plan == "tiered-pricing" ||
+
+      (var.plan == "cross-region-resiliency" &&
+        contains(["us-south", "eu-de", "jp-tok"], var.region)
+      ) ||
+
+      (var.plan == "dedicated" &&
+        contains(["us-south", "eu-de", "us-east"], var.region)
+      )
+    )
+    error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east."
   }
 }
 
