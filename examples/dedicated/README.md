@@ -1,4 +1,4 @@
-# Basic example
+# Dedicated example
 
 <!-- BEGIN SCHEMATICS DEPLOY HOOK -->
 <p>
