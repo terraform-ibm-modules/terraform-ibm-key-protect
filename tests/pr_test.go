@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -150,12 +151,12 @@ func TestPlanValidation(t *testing.T) {
 		"resource_group": options.ResourceGroup,
 	}
 
-	_, initErr := terraform.InitE(t, options.TerraformOptions)
+	_, initErr := terraform.InitContextE(t, context.Background(), options.TerraformOptions)
 	if assert.Nil(t, initErr, "This should not have errored") {
 		for _, validRegion := range validCrossRegionPlanLocations {
 			options.TerraformOptions.Vars["region"] = validRegion
 			t.Run(validRegion, func(t *testing.T) {
-				output, err := terraform.PlanE(t, options.TerraformOptions)
+				output, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
 				assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
 				assert.NotNil(t, output, "Expected some output")
 			})
@@ -165,7 +166,7 @@ func TestPlanValidation(t *testing.T) {
 			options.TerraformOptions.Vars["region"] = invalidRegion
 			t.Run(invalidRegion, func(t *testing.T) {
 				fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
-				_, err := terraform.PlanE(t, options.TerraformOptions)
+				_, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
 				fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
 				assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
 			})
