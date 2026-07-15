@@ -28,7 +28,7 @@ output "key_protect_account_id" {
 }
 
 output "key_protect_instance_policies" {
-  value       = local.is_dedicated ? null : local.instance_policies
+  value       = local.instance_policies
   description = "Instance Polices of the Key Protect instance"
 }
 
@@ -45,4 +45,9 @@ output "kp_public_endpoint" {
 output "cbr_rule_ids" {
   description = "CBR rule ids created to restrict Key Protect"
   value       = length(module.cbr_rule[*]) > 0 ? module.cbr_rule[*].rule_id : null
+}
+
+output "dedicated_cryptounits" {
+  description = "Cryptounits associated with the dedicated Key Protect instance after initialization. Each element contains the crypto unit `id` and `state`."
+  value       = local.is_dedicated ? ibm_kms_cryptounits.dedicated_key_protect_initialization[0].cryptounits : null
 }

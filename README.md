@@ -80,7 +80,7 @@ To attach access management tags to resources in this module, you need the follo
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.88.0, < 3.0.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 2.4.0, < 3.0.0 |
 
 ### Modules
 
@@ -92,6 +92,7 @@ To attach access management tags to resources in this module, you need the follo
 
 | Name | Type |
 |------|------|
+| [ibm_kms_cryptounits.dedicated_key_protect_initialization](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/kms_cryptounits) | resource |
 | [ibm_kms_instance_policies.key_protect_instance_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/kms_instance_policies) | resource |
 | [ibm_resource_instance.dedicated_key_protect_instance](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_instance) | resource |
 | [ibm_resource_instance.key_protect_instance](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/resource_instance) | resource |
@@ -105,6 +106,10 @@ To attach access management tags to resources in this module, you need the follo
 | <a name="input_access_tags"></a> [access\_tags](#input\_access\_tags) | Add access management tags to the Key Protect instance to control access. [Learn more](https://cloud.ibm.com/docs/account?topic=account-tag&interface=ui#create-access-console). | `list(string)` | `[]` | no |
 | <a name="input_allowed_network"></a> [allowed\_network](#input\_allowed\_network) | Types of the allowed networks to be set for the Key Protect instance. Possible values are 'private-only' or 'public-and-private'. This can be set for only 'tiered-pricing' and 'cross-region-resiliency' plans. | `string` | `"public-and-private"` | no |
 | <a name="input_cbr_rules"></a> [cbr\_rules](#input\_cbr\_rules) | The context-based restrictions rule to create. Only one rule is allowed. | <pre>list(object({<br/>    description = string<br/>    account_id  = string<br/>    rule_contexts = list(object({<br/>      attributes = optional(list(object({<br/>        name  = string<br/>        value = string<br/>    }))) }))<br/>    enforcement_mode = string<br/>    operations = optional(list(object({<br/>      api_types = list(object({<br/>        api_type_id = string<br/>      }))<br/>    })))<br/>  }))</pre> | `[]` | no |
+| <a name="input_dedicated_crypto_units"></a> [dedicated\_crypto\_units](#input\_dedicated\_crypto\_units) | The number of crypto units to allocate for the dedicated Key Protect instance. Only used when `plan` is `dedicated`. | `number` | `2` | no |
+| <a name="input_dedicated_master_key"></a> [dedicated\_master\_key](#input\_dedicated\_master\_key) | Master key configuration used to initialize the dedicated Key Protect instance. Each entry in `keysharefile` represents one key-share part (minimum 2). `keyname` must be 8 characters or less. Only used when `plan` is `dedicated`. | <pre>object({<br/>    keysharefile = list(object({<br/>      filepath   = string<br/>      passphrase = string<br/>    }))<br/>    keyname = string<br/>  })</pre> | <pre>{<br/>  "keyname": "mbkkey",<br/>  "keysharefile": [<br/>    {<br/>      "filepath": "kp-dedicated-mbk-1.key",<br/>      "passphrase": ""<br/>    },<br/>    {<br/>      "filepath": "kp-dedicated-mbk-2.key",<br/>      "passphrase": ""<br/>    }<br/>  ]<br/>}</pre> | no |
+| <a name="input_dedicated_signature_key"></a> [dedicated\_signature\_key](#input\_dedicated\_signature\_key) | Signature key configuration used to initialize the dedicated Key Protect instance. `filepath` is the path to the signature key file (created if it does not exist), `passphrase` secures the key, and `owner` optionally identifies the administrator. Only used when `plan` is `dedicated`. | <pre>object({<br/>    filepath   = string<br/>    passphrase = string<br/>    owner      = optional(string, "")<br/>  })</pre> | <pre>{<br/>  "filepath": "kp-dedicated-signature.key",<br/>  "owner": "ADMIN",<br/>  "passphrase": ""<br/>}</pre> | no |
+| <a name="input_dedicated_use_private_endpoint"></a> [dedicated\_use\_private\_endpoint](#input\_dedicated\_use\_private\_endpoint) | If set to true, the private endpoint is used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`. | `bool` | `false` | no |
 | <a name="input_dual_auth_delete_enabled"></a> [dual\_auth\_delete\_enabled](#input\_dual\_auth\_delete\_enabled) | If set to true, Key Protect enables a dual authorization policy on the instance. Note: Once the dual authorization policy is set on the instance, it cannot be reverted. An instance with dual authorization policy enabled cannot be destroyed using Terraform. | `bool` | `false` | no |
 | <a name="input_key_create_import_access_enabled"></a> [key\_create\_import\_access\_enabled](#input\_key\_create\_import\_access\_enabled) | If set to true, Key Protect enables a key create import access policy on the instance | `bool` | `true` | no |
 | <a name="input_key_create_import_access_settings"></a> [key\_create\_import\_access\_settings](#input\_key\_create\_import\_access\_settings) | Key create import access policy settings to configure if var.enable\_key\_create\_import\_access\_policy is true. For more info see https://cloud.ibm.com/docs/key-protect?topic=key-protect-manage-keyCreateImportAccess | <pre>object({<br/>    create_root_key     = optional(bool, true)<br/>    create_standard_key = optional(bool, true)<br/>    import_root_key     = optional(bool, true)<br/>    import_standard_key = optional(bool, true)<br/>    enforce_token       = optional(bool, false)<br/>  })</pre> | `{}` | no |
@@ -122,6 +127,7 @@ To attach access management tags to resources in this module, you need the follo
 | Name | Description |
 |------|-------------|
 | <a name="output_cbr_rule_ids"></a> [cbr\_rule\_ids](#output\_cbr\_rule\_ids) | CBR rule ids created to restrict Key Protect |
+| <a name="output_dedicated_cryptounits"></a> [dedicated\_cryptounits](#output\_dedicated\_cryptounits) | Cryptounits associated with the dedicated Key Protect instance after initialization. Each element contains the crypto unit `id` and `state`. |
 | <a name="output_key_protect_account_id"></a> [key\_protect\_account\_id](#output\_key\_protect\_account\_id) | The account ID of the Key Protect instance. |
 | <a name="output_key_protect_crn"></a> [key\_protect\_crn](#output\_key\_protect\_crn) | CRN of the Key Protect instance |
 | <a name="output_key_protect_guid"></a> [key\_protect\_guid](#output\_key\_protect\_guid) | GUID of the Key Protect instance |

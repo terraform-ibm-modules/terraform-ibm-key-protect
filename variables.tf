@@ -124,6 +124,61 @@ variable "access_tags" {
   }
 }
 
+##############################################################################
+# Dedicated Key Protect Initialization
+##############################################################################
+
+variable "dedicated_crypto_units" {
+  type        = number
+  description = "The number of crypto units to allocate for the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = 2
+
+  validation {
+    condition     = var.dedicated_crypto_units >= 2 && var.dedicated_crypto_units <= 3
+    error_message = "The `dedicated_crypto_units` value must be 2 or 3."
+  }
+}
+
+variable "dedicated_use_private_endpoint" {
+  type        = bool
+  description = "If set to true, the private endpoint is used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = false
+}
+
+variable "dedicated_signature_key" {
+  type = object({
+    filepath   = string
+    passphrase = string
+    owner      = optional(string, "")
+  })
+  sensitive   = true
+  description = "Signature key configuration used to initialize the dedicated Key Protect instance. `filepath` is the path to the signature key file (created if it does not exist), `passphrase` secures the key, and `owner` optionally identifies the administrator. Only used when `plan` is `dedicated`."
+  default = {
+    filepath   = "kp-dedicated-signature.key"
+    passphrase = ""
+    owner      = "ADMIN"
+  }
+}
+
+variable "dedicated_master_key" {
+  type = object({
+    keysharefile = list(object({
+      filepath   = string
+      passphrase = string
+    }))
+    keyname = string
+  })
+  sensitive   = true
+  description = "Master key configuration used to initialize the dedicated Key Protect instance. Each entry in `keysharefile` represents one key-share part (minimum 2). `keyname` must be 8 characters or less. Only used when `plan` is `dedicated`."
+  default = {
+    keysharefile = [
+      { filepath = "kp-dedicated-mbk-1.key", passphrase = "" },
+      { filepath = "kp-dedicated-mbk-2.key", passphrase = "" }
+    ]
+    keyname = "mbkkey"
+  }
+}
+
 ##############################################################
 # Context-based restriction (CBR)
 ##############################################################
