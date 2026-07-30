@@ -46,27 +46,21 @@ resource "ibm_kms_cryptounits" "dedicated_key_protect_initialization" {
   region               = var.region
   use_private_endpoint = var.dedicated_use_private_endpoint
 
-  dynamic "signature_key" {
-    for_each = [var.dedicated_signature_key]
-    content {
-      filepath   = signature_key.value.filepath
-      passphrase = signature_key.value.passphrase
-      owner      = signature_key.value.owner
-    }
+  signature_key {
+    filepath   = var.dedicated_signature_key.filepath
+    passphrase = var.dedicated_signature_key.passphrase
+    owner      = var.dedicated_signature_key.owner
   }
 
-  dynamic "master_key" {
-    for_each = [var.dedicated_master_key]
-    content {
-      dynamic "keysharefile" {
-        for_each = master_key.value.keysharefile
-        content {
-          filepath   = keysharefile.value.filepath
-          passphrase = keysharefile.value.passphrase
-        }
+  master_key {
+    dynamic "keysharefile" {
+      for_each = { for i, v in var.dedicated_master_key.keysharefile : i => v }
+      content {
+        filepath   = keysharefile.value.filepath
+        passphrase = keysharefile.value.passphrase
       }
-      keyname = master_key.value.keyname
     }
+    keyname = var.dedicated_master_key.keyname
   }
 }
 
