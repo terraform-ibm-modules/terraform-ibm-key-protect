@@ -59,21 +59,22 @@ variable "dedicated_signature_key" {
   }
 }
 
-variable "dedicated_master_key" {
-  type = object({
-    keysharefile = list(object({
-      filepath   = string
-      passphrase = string
-    }))
-    keyname = string
-  })
+variable "dedicated_master_key_keyname" {
+  type        = string
   sensitive   = true
-  description = "Master key configuration for initializing the dedicated Key Protect instance. At least 2 key share files are required."
-  default = {
-    keysharefile = [
-      { filepath = "kp-dedicated-mbk-1.key", passphrase = "" },
-      { filepath = "kp-dedicated-mbk-2.key", passphrase = "" }
-    ]
-    keyname = "mbkkey"
-  }
+  description = "The name of the master key for initializing the dedicated Key Protect instance. Must be 8 characters or less."
+  default     = "mbkkey"
+}
+
+variable "dedicated_master_key_keysharefile" {
+  type = list(object({
+    filepath   = string
+    passphrase = string
+  }))
+  sensitive   = true
+  description = "List of key-share file configurations for initializing the dedicated Key Protect instance. At least 2 entries are required."
+  default = [
+    { filepath = "kp-dedicated-mbk-1.key", passphrase = "" },
+    { filepath = "kp-dedicated-mbk-2.key", passphrase = "" }
+  ]
 }
