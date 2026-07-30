@@ -69,6 +69,6 @@ variable "dedicated_master_key_keyname" {
 variable "dedicated_master_key_keysharefile" {
   type        = string
   sensitive   = true
-  description = "JSON-encoded list of key-share file configurations for initializing the dedicated Key Protect instance. Each entry must have `filepath` and `passphrase`. Minimum 2 entries required. Example: `[{\"filepath\":\"mbk-1.key\",\"passphrase\":\"\"},{\"filepath\":\"mbk-2.key\",\"passphrase\":\"\"}]`."
-  default     = "[{\"filepath\":\"kp-dedicated-mbk-1.key\",\"passphrase\":\"\"},{\"filepath\":\"kp-dedicated-mbk-2.key\",\"passphrase\":\"\"}]"
+  description = "JSON-encoded map of key-share file configurations for initializing the dedicated Key Protect instance. Each key is a string index and each value must have `filepath` and `passphrase`. Minimum 2 entries required. Example: `{\"0\":{\"filepath\":\"mbk-1.key\",\"passphrase\":\"\"},\"1\":{\"filepath\":\"mbk-2.key\",\"passphrase\":\"\"}}`."
+  default     = "{\"0\":{\"filepath\":\"kp-dedicated-mbk-1.key\",\"passphrase\":\"\"},\"1\":{\"filepath\":\"kp-dedicated-mbk-2.key\",\"passphrase\":\"\"}}"
 }
