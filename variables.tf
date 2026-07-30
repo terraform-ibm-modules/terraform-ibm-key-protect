@@ -168,16 +168,10 @@ variable "dedicated_master_key_keyname" {
 }
 
 variable "dedicated_master_key_keysharefile" {
-  type = list(object({
-    filepath   = string
-    passphrase = string
-  }))
+  type        = string
   sensitive   = true
-  description = "List of key-share file configurations used to initialize the dedicated Key Protect instance. Each entry represents one key-share part (minimum 2 required). Only used when `plan` is `dedicated`."
-  default = [
-    { filepath = "kp-dedicated-mbk-1.key", passphrase = "" },
-    { filepath = "kp-dedicated-mbk-2.key", passphrase = "" }
-  ]
+  description = "JSON-encoded list of key-share file configurations used to initialize the dedicated Key Protect instance. Each entry must have `filepath` and `passphrase` fields. Minimum 2 entries required. Example: `[{\"filepath\":\"mbk-1.key\",\"passphrase\":\"\"},{\"filepath\":\"mbk-2.key\",\"passphrase\":\"\"}]`. Only used when `plan` is `dedicated`."
+  default     = "[{\"filepath\":\"kp-dedicated-mbk-1.key\",\"passphrase\":\"\"},{\"filepath\":\"kp-dedicated-mbk-2.key\",\"passphrase\":\"\"}]"
 }
 
 ##############################################################
