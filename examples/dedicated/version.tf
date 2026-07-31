@@ -5,7 +5,7 @@ terraform {
     # ibm_kms_cryptounits (dedicated plan initialization) requires >= 2.4.0
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "2.4.0"
+      version = "2.5.0-beta0"
     }
   }
 }
