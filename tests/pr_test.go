@@ -73,8 +73,16 @@ func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions 
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"access_tags": permanentResources["accessTags"],
-			"region":      dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))],
+			"access_tags":                             permanentResources["accessTags"],
+			"region":                                  dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))],
+			"dedicated_signature_key_filepath":        os.Getenv("KP_DEDICATED_SIGNATURE_KEY_FILEPATH"),
+			"dedicated_signature_key_passphrase":      os.Getenv("KP_DEDICATED_SIGNATURE_KEY_PASSPHRASE"),
+			"dedicated_signature_key_owner":           os.Getenv("KP_DEDICATED_SIGNATURE_KEY_OWNER"),
+			"dedicated_master_key_keyname":            os.Getenv("KP_DEDICATED_MASTER_KEY_KEYNAME"),
+			"dedicated_master_key_share_1_filepath":   os.Getenv("KP_DEDICATED_MASTER_KEY_SHARE_1_FILEPATH"),
+			"dedicated_master_key_share_1_passphrase": os.Getenv("KP_DEDICATED_MASTER_KEY_SHARE_1_PASSPHRASE"),
+			"dedicated_master_key_share_2_filepath":   os.Getenv("KP_DEDICATED_MASTER_KEY_SHARE_2_FILEPATH"),
+			"dedicated_master_key_share_2_passphrase": os.Getenv("KP_DEDICATED_MASTER_KEY_SHARE_2_PASSPHRASE"),
 		},
 	})
 	return options

@@ -24,7 +24,9 @@ module "key_protect_module" {
   access_tags                             = var.access_tags
   dedicated_crypto_units                  = var.dedicated_crypto_units
   dedicated_use_private_endpoint          = var.dedicated_use_private_endpoint
-  dedicated_signature_key                 = var.dedicated_signature_key
+  dedicated_signature_key_filepath        = var.dedicated_signature_key_filepath
+  dedicated_signature_key_passphrase      = var.dedicated_signature_key_passphrase
+  dedicated_signature_key_owner           = var.dedicated_signature_key_owner
   dedicated_master_key_keyname            = var.dedicated_master_key_keyname
   dedicated_master_key_share_1_filepath   = var.dedicated_master_key_share_1_filepath
   dedicated_master_key_share_1_passphrase = var.dedicated_master_key_share_1_passphrase
