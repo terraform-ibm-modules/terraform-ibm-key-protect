@@ -66,9 +66,44 @@ variable "dedicated_master_key_keyname" {
   default     = "mbkkey"
 }
 
-variable "dedicated_master_key_keysharefile" {
+variable "dedicated_master_key_share_1_filepath" {
   type        = string
   sensitive   = true
-  description = "JSON-encoded map of key-share file configurations for initializing the dedicated Key Protect instance. Each key is a string index and each value must have `filepath` and `passphrase`. Minimum 2 entries required. Example: `{\"0\":{\"filepath\":\"mbk-1.key\",\"passphrase\":\"\"},\"1\":{\"filepath\":\"mbk-2.key\",\"passphrase\":\"\"}}`."
-  default     = "{\"0\":{\"filepath\":\"kp-dedicated-mbk-1.key\",\"passphrase\":\"\"},\"1\":{\"filepath\":\"kp-dedicated-mbk-2.key\",\"passphrase\":\"\"}}"
+  description = "Filepath for key share 1 of the master key used to initialize the dedicated Key Protect instance."
+  default     = "kp-dedicated-mbk-1.key"
+}
+
+variable "dedicated_master_key_share_1_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 1 of the master key used to initialize the dedicated Key Protect instance."
+  default     = ""
+}
+
+variable "dedicated_master_key_share_2_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for key share 2 of the master key used to initialize the dedicated Key Protect instance."
+  default     = "kp-dedicated-mbk-2.key"
+}
+
+variable "dedicated_master_key_share_2_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 2 of the master key used to initialize the dedicated Key Protect instance."
+  default     = ""
+}
+
+variable "dedicated_master_key_share_3_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for key share 3 of the master key. Only required when `dedicated_crypto_units` is 3."
+  default     = null
+}
+
+variable "dedicated_master_key_share_3_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 3 of the master key. Only required when `dedicated_crypto_units` is 3."
+  default     = null
 }
