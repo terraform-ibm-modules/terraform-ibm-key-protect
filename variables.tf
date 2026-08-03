@@ -145,19 +145,25 @@ variable "dedicated_use_private_endpoint" {
   default     = false
 }
 
-variable "dedicated_signature_key" {
-  type = object({
-    filepath   = string
-    passphrase = string
-    owner      = optional(string, "")
-  })
+variable "dedicated_signature_key_filepath" {
+  type        = string
   sensitive   = true
-  description = "Signature key configuration used to initialize the dedicated Key Protect instance. `filepath` is the path to the signature key file (created if it does not exist), `passphrase` secures the key, and `owner` optionally identifies the administrator. Only used when `plan` is `dedicated`."
-  default = {
-    filepath   = "kp-dedicated-signature.key"
-    passphrase = ""
-    owner      = "ADMIN"
-  }
+  description = "Filepath for the signature key used to initialize the dedicated Key Protect instance. The file is created if it does not exist. Only used when `plan` is `dedicated`."
+  default     = "kp-dedicated-signature.key"
+}
+
+variable "dedicated_signature_key_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for the signature key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = ""
+}
+
+variable "dedicated_signature_key_owner" {
+  type        = string
+  sensitive   = true
+  description = "Owner label for the signature key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = "ADMIN"
 }
 
 variable "dedicated_master_key_keyname" {

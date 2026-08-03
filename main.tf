@@ -47,9 +47,9 @@ resource "ibm_kms_cryptounits" "dedicated_key_protect_initialization" {
   use_private_endpoint = var.dedicated_use_private_endpoint
 
   signature_key {
-    filepath   = var.dedicated_signature_key.filepath
-    passphrase = var.dedicated_signature_key.passphrase
-    owner      = var.dedicated_signature_key.owner
+    filepath   = var.dedicated_signature_key_filepath
+    passphrase = var.dedicated_signature_key_passphrase
+    owner      = var.dedicated_signature_key_owner
   }
 
   master_key {
