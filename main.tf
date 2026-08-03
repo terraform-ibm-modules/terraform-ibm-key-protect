@@ -53,11 +53,19 @@ resource "ibm_kms_cryptounits" "dedicated_key_protect_initialization" {
   }
 
   master_key {
+    keysharefile {
+      filepath   = var.dedicated_master_key_share_1_filepath
+      passphrase = var.dedicated_master_key_share_1_passphrase
+    }
+    keysharefile {
+      filepath   = var.dedicated_master_key_share_2_filepath
+      passphrase = var.dedicated_master_key_share_2_passphrase
+    }
     dynamic "keysharefile" {
-      for_each = tomap({ for idx, item in jsondecode(var.dedicated_master_key_keysharefile) : tostring(idx) => item })
+      for_each = var.dedicated_master_key_share_3_filepath != null ? [1] : []
       content {
-        filepath   = keysharefile.value.filepath
-        passphrase = keysharefile.value.passphrase
+        filepath   = var.dedicated_master_key_share_3_filepath
+        passphrase = var.dedicated_master_key_share_3_passphrase
       }
     }
     keyname = var.dedicated_master_key_keyname
