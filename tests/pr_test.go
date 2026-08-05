@@ -87,11 +87,9 @@ func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions 
 func TestRunDedicatedExample(t *testing.T) {
 	t.Parallel()
 
+	t.Setenv("TF_LOG", "TRACE")
+
 	options := setupOptionsDedicated(t, "kp-d")
-	options.TestSetup()
-	options.TerraformOptions.EnvVars = map[string]string{
-		"TF_LOG": "TRACE",
-	}
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
