@@ -85,8 +85,6 @@ func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions 
 }
 
 func TestRunDedicatedExample(t *testing.T) {
-	t.Parallel()
-
 	t.Setenv("TF_LOG", "TRACE")
 
 	options := setupOptionsDedicated(t, "kp-d")
