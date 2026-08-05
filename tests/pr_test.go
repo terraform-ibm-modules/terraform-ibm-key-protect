@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -89,12 +88,10 @@ func TestRunDedicatedExample(t *testing.T) {
 	t.Parallel()
 
 	options := setupOptionsDedicated(t, "kp-d")
-	options.TerraformOptions = terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: dedicatedKPDir,
-		EnvVars: map[string]string{
-			"TF_LOG": "TRACE",
-		},
-	})
+	options.TestSetup()
+	options.TerraformOptions.EnvVars = map[string]string{
+		"TF_LOG": "TRACE",
+	}
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
