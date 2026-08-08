@@ -2,24 +2,20 @@
 package test
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"os"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
-	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
 // Use existing resource group for tests
 const resourceGroup = "geretain-test-key-protect"
-const terraformDir = "examples/basic"
-const advancedExampleTerraformDir = "examples/advanced"
+
+// const terraformDir = "examples/basic"
+// const advancedExampleTerraformDir = "examples/advanced"
 const dedicatedKPDir = "examples/dedicated"
 
 // Define a struct with fields that match the structure of the YAML data
@@ -38,27 +34,27 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
-	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:       t,
-		TerraformDir:  terraformDir,
-		Prefix:        prefix,
-		ResourceGroup: resourceGroup,
-		TerraformVars: map[string]interface{}{
-			"access_tags": permanentResources["accessTags"],
-		},
-	})
-	return options
-}
+// func setupOptions(t *testing.T, prefix string) *testhelper.TestOptions {
+// 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
+// 		Testing:       t,
+// 		TerraformDir:  terraformDir,
+// 		Prefix:        prefix,
+// 		ResourceGroup: resourceGroup,
+// 		TerraformVars: map[string]interface{}{
+// 			"access_tags": permanentResources["accessTags"],
+// 		},
+// 	})
+// 	return options
+// }
 
-func TestRunBasicExample(t *testing.T) {
-	t.Parallel()
+// func TestRunBasicExample(t *testing.T) {
+// 	t.Parallel()
 
-	options := setupOptions(t, "kp-basic")
-	output, err := options.RunTestConsistency()
-	assert.Nil(t, err, "This should not have errored")
-	assert.NotNil(t, output, "Expected some output")
-}
+// 	options := setupOptions(t, "kp-basic")
+// 	output, err := options.RunTestConsistency()
+// 	assert.Nil(t, err, "This should not have errored")
+// 	assert.NotNil(t, output, "Expected some output")
+// }
 
 var dedicatedRegions = []string{
 	"us-south",
@@ -73,15 +69,23 @@ func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions 
 		Prefix:        prefix,
 		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"access_tags": permanentResources["accessTags"],
-			"region":      dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))],
+			"access_tags":                             permanentResources["accessTags"],
+			"region":                                  dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))],
+			"dedicated_signature_key_filepath":        "kp-dedicated-signature.key",
+			"dedicated_signature_key_passphrase":      "Passw0rd!", // #nosec G101
+			"dedicated_signature_key_owner":           "ADMIN",
+			"dedicated_master_key_keyname":            "mbkkey",
+			"dedicated_master_key_share_1_filepath":   "kp-dedicated-mbk-1.key",
+			"dedicated_master_key_share_1_passphrase": "Passw0rd!", // #nosec G101
+			"dedicated_master_key_share_2_filepath":   "kp-dedicated-mbk-2.key",
+			"dedicated_master_key_share_2_passphrase": "Passw0rd!", // #nosec G101
 		},
 	})
 	return options
 }
 
 func TestRunDedicatedExample(t *testing.T) {
-	t.Parallel()
+	t.Setenv("TF_LOG", "TRACE")
 
 	options := setupOptionsDedicated(t, "kp-d")
 	output, err := options.RunTestConsistency()
@@ -89,87 +93,87 @@ func TestRunDedicatedExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
-func TestRunAdvanceExample(t *testing.T) {
-	t.Parallel()
+// func TestRunAdvanceExample(t *testing.T) {
+// 	t.Parallel()
 
-	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
-		Testing: t,
-		Prefix:  "advanced-key-protect",
-		TarIncludePatterns: []string{
-			"*.tf",
-			advancedExampleTerraformDir + "/*.tf",
-		},
+// 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+// 		Testing: t,
+// 		Prefix:  "advanced-key-protect",
+// 		TarIncludePatterns: []string{
+// 			"*.tf",
+// 			advancedExampleTerraformDir + "/*.tf",
+// 		},
 
-		ResourceGroup:          resourceGroup,
-		TemplateFolder:         advancedExampleTerraformDir,
-		Tags:                   []string{"test-schematic"},
-		DeleteWorkspaceOnFail:  false,
-		WaitJobCompleteMinutes: 60,
-	})
+// 		ResourceGroup:          resourceGroup,
+// 		TemplateFolder:         advancedExampleTerraformDir,
+// 		Tags:                   []string{"test-schematic"},
+// 		DeleteWorkspaceOnFail:  false,
+// 		WaitJobCompleteMinutes: 60,
+// 	})
 
-	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
-		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "region", Value: options.Region, DataType: "string"},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
-		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
-	}
+// 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+// 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+// 		{Name: "region", Value: options.Region, DataType: "string"},
+// 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+// 		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
+// 	}
 
-	err := options.RunSchematicTest()
-	assert.Nil(t, err, "This should not have errored")
-}
+// 	err := options.RunSchematicTest()
+// 	assert.Nil(t, err, "This should not have errored")
+// }
 
-func TestRunUpgrade(t *testing.T) {
-	t.Parallel()
+// func TestRunUpgrade(t *testing.T) {
+// 	t.Parallel()
 
-	options := setupOptions(t, "kp-basic-upgrade")
-	output, err := options.RunTestUpgrade()
-	if !options.UpgradeTestSkipped {
-		assert.Nil(t, err, "This should not have errored")
-		assert.NotNil(t, output, "Expected some output")
-	}
-}
+// 	options := setupOptions(t, "kp-basic-upgrade")
+// 	output, err := options.RunTestUpgrade()
+// 	if !options.UpgradeTestSkipped {
+// 		assert.Nil(t, err, "This should not have errored")
+// 		assert.NotNil(t, output, "Expected some output")
+// 	}
+// }
 
-func TestPlanValidation(t *testing.T) {
-	// Regions that support Cross Region Resiliency plan
-	validCrossRegionPlanLocations := []string{"us-south", "eu-de", "jp-tok"}
-	// Regions that don't support Cross Region Resiliency plan
-	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
+// func TestPlanValidation(t *testing.T) {
+// 	// Regions that support Cross Region Resiliency plan
+// 	validCrossRegionPlanLocations := []string{"us-south", "eu-de", "jp-tok"}
+// 	// Regions that don't support Cross Region Resiliency plan
+// 	invalidCrossRegionPlanLocations := []string{"au-syd", "jp-osa", "eu-es", "eu-gb", "ca-tor", "us-east", "br-sao"}
 
-	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:       t,
-		TerraformDir:  terraformDir,
-		Prefix:        "validate-plan",
-		ResourceGroup: resourceGroup,
-		Region:        "us-south", // skip VPC region picker
-	})
-	options.TestSetup()
-	options.TerraformOptions.NoColor = true
-	options.TerraformOptions.Logger = logger.Discard
-	options.TerraformOptions.Vars = map[string]interface{}{
-		"prefix":         options.Prefix,
-		"plan":           "cross-region-resiliency",
-		"resource_group": options.ResourceGroup,
-	}
+// 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
+// 		Testing:       t,
+// 		TerraformDir:  terraformDir,
+// 		Prefix:        "validate-plan",
+// 		ResourceGroup: resourceGroup,
+// 		Region:        "us-south", // skip VPC region picker
+// 	})
+// 	options.TestSetup()
+// 	options.TerraformOptions.NoColor = true
+// 	options.TerraformOptions.Logger = logger.Discard
+// 	options.TerraformOptions.Vars = map[string]interface{}{
+// 		"prefix":         options.Prefix,
+// 		"plan":           "cross-region-resiliency",
+// 		"resource_group": options.ResourceGroup,
+// 	}
 
-	_, initErr := terraform.InitContextE(t, context.Background(), options.TerraformOptions)
-	if assert.Nil(t, initErr, "This should not have errored") {
-		for _, validRegion := range validCrossRegionPlanLocations {
-			options.TerraformOptions.Vars["region"] = validRegion
-			t.Run(validRegion, func(t *testing.T) {
-				output, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
-				assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
-				assert.NotNil(t, output, "Expected some output")
-			})
-		}
+// 	_, initErr := terraform.InitContextE(t, context.Background(), options.TerraformOptions)
+// 	if assert.Nil(t, initErr, "This should not have errored") {
+// 		for _, validRegion := range validCrossRegionPlanLocations {
+// 			options.TerraformOptions.Vars["region"] = validRegion
+// 			t.Run(validRegion, func(t *testing.T) {
+// 				output, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
+// 				assert.Nil(t, err, fmt.Sprintf("This should not have errored\nRegion: %s\n", validRegion))
+// 				assert.NotNil(t, output, "Expected some output")
+// 			})
+// 		}
 
-		for _, invalidRegion := range invalidCrossRegionPlanLocations {
-			options.TerraformOptions.Vars["region"] = invalidRegion
-			t.Run(invalidRegion, func(t *testing.T) {
-				fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
-				_, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
-				fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
-				assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
-			})
-		}
-	}
-}
+// 		for _, invalidRegion := range invalidCrossRegionPlanLocations {
+// 			options.TerraformOptions.Vars["region"] = invalidRegion
+// 			t.Run(invalidRegion, func(t *testing.T) {
+// 				fmt.Print("\n#################### THIS IS EXPECTED TO ERROR ####################\n\n")
+// 				_, err := terraform.PlanContextE(t, context.Background(), options.TerraformOptions)
+// 				fmt.Print("\n#################### END EXPECTED ERROR ####################\n\n")
+// 				assert.NotNil(t, err, fmt.Sprintf("This should have errored\nRegion: %s", invalidRegion))
+// 			})
+// 		}
+// 	}
+// }

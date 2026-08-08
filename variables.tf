@@ -124,6 +124,97 @@ variable "access_tags" {
   }
 }
 
+##############################################################################
+# Dedicated Key Protect Initialization
+##############################################################################
+
+variable "dedicated_crypto_units" {
+  type        = number
+  description = "The number of crypto units to allocate for the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = 2
+
+  validation {
+    condition     = var.dedicated_crypto_units >= 2 && var.dedicated_crypto_units <= 3
+    error_message = "The `dedicated_crypto_units` value must be 2 or 3."
+  }
+}
+
+variable "dedicated_use_private_endpoint" {
+  type        = bool
+  description = "If set to true, the private endpoint is used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = false
+}
+
+variable "dedicated_signature_key_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for the signature key used to initialize the dedicated Key Protect instance. The file is created if it does not exist. Only used when `plan` is `dedicated`."
+  default     = "kp-dedicated-signature.key"
+}
+
+variable "dedicated_signature_key_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for the signature key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = ""
+}
+
+variable "dedicated_signature_key_owner" {
+  type        = string
+  sensitive   = true
+  description = "Owner label for the signature key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = "ADMIN"
+}
+
+variable "dedicated_master_key_keyname" {
+  type        = string
+  sensitive   = true
+  description = "The name of the master key used to initialize the dedicated Key Protect instance. Must be 8 characters or less. Only used when `plan` is `dedicated`."
+  default     = "mbkkey"
+}
+
+variable "dedicated_master_key_share_1_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for key share 1 of the master key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = "kp-dedicated-mbk-1.key"
+}
+
+variable "dedicated_master_key_share_1_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 1 of the master key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = ""
+}
+
+variable "dedicated_master_key_share_2_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for key share 2 of the master key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = "kp-dedicated-mbk-2.key"
+}
+
+variable "dedicated_master_key_share_2_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 2 of the master key used to initialize the dedicated Key Protect instance. Only used when `plan` is `dedicated`."
+  default     = ""
+}
+
+variable "dedicated_master_key_share_3_filepath" {
+  type        = string
+  sensitive   = true
+  description = "Filepath for key share 3 of the master key used to initialize the dedicated Key Protect instance. Only used when `dedicated_crypto_units` is 3. Only used when `plan` is `dedicated`."
+  default     = null
+}
+
+variable "dedicated_master_key_share_3_passphrase" {
+  type        = string
+  sensitive   = true
+  description = "Passphrase for key share 3 of the master key used to initialize the dedicated Key Protect instance. Only used when `dedicated_crypto_units` is 3. Only used when `plan` is `dedicated`."
+  default     = null
+}
+
 ##############################################################
 # Context-based restriction (CBR)
 ##############################################################

@@ -41,3 +41,8 @@ output "kp_public_endpoint" {
   description = "Instance public endpoint URL"
   value       = module.key_protect_module.kp_public_endpoint
 }
+
+output "dedicated_cryptounits" {
+  description = "Cryptounits associated with the dedicated Key Protect instance after initialization"
+  value       = module.key_protect_module.dedicated_cryptounits
+}
