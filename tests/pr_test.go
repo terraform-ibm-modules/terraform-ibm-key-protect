@@ -4,6 +4,7 @@ package test
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -85,9 +86,24 @@ func setupOptionsDedicated(t *testing.T, prefix string) *testhelper.TestOptions 
 }
 
 func TestRunDedicatedExample(t *testing.T) {
-	t.Setenv("TF_LOG", "TRACE")
+	t.Parallel()
+
+	// Pre-create key files in a temp dir with absolute paths so the provider
+	// detects them as existing (keyExists=true) and skips native lib key generation.
+	keyDir := t.TempDir()
+	sigKeyPath := filepath.Join(keyDir, "kp-dedicated-signature.key")
+	mbk1Path := filepath.Join(keyDir, "kp-dedicated-mbk-1.key")
+	mbk2Path := filepath.Join(keyDir, "kp-dedicated-mbk-2.key")
+	for _, p := range []string{sigKeyPath, mbk1Path, mbk2Path} {
+		if err := os.WriteFile(p, []byte("placeholder"), 0600); err != nil { // #nosec G306
+			t.Fatalf("failed to create key file %s: %v", p, err)
+		}
+	}
 
 	options := setupOptionsDedicated(t, "kp-d")
+	options.TerraformVars["dedicated_signature_key_filepath"] = sigKeyPath
+	options.TerraformVars["dedicated_master_key_share_1_filepath"] = mbk1Path
+	options.TerraformVars["dedicated_master_key_share_2_filepath"] = mbk2Path
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
