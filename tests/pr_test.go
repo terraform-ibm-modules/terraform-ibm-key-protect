@@ -78,6 +78,16 @@ var dedicatedRegions = []string{
 func generateDedicatedKeyFiles(t *testing.T, keyDir string) (sigKeyPath, mbk1Path, mbk2Path string) {
 	t.Helper()
 
+	// Log in to IBM Cloud using the API key that Terraform also uses.
+	// The ibmcloud CLI must be authenticated before any kp subcommands work.
+	apiKey := os.Getenv("TF_VAR_ibmcloud_api_key")
+	require.NotEmpty(t, apiKey, "TF_VAR_ibmcloud_api_key must be set")
+
+	loginCmd := exec.Command("ibmcloud", "login", "--apikey", apiKey, "--no-region") // #nosec G204 G702
+	loginCmd.Stdout = os.Stdout
+	loginCmd.Stderr = os.Stderr
+	require.NoError(t, loginCmd.Run(), "ibmcloud login failed")
+
 	sigKeyPath = filepath.Join(keyDir, "kp-dedicated-signature.key")
 	mbk1Path = filepath.Join(keyDir, "kp-dedicated-mbk-1.key")
 	mbk2Path = filepath.Join(keyDir, "kp-dedicated-mbk-2.key")
