@@ -15,11 +15,23 @@ module "resource_group" {
 ##############################################################################
 
 module "key_protect_module" {
-  source            = "../.."
-  key_protect_name  = "${var.prefix}-kp"
-  resource_group_id = module.resource_group.resource_group_id
-  plan              = "dedicated"
-  region            = var.region
-  resource_tags     = var.resource_tags
-  access_tags       = var.access_tags
+  source                                  = "../.."
+  key_protect_name                        = "${var.prefix}-kp"
+  resource_group_id                       = module.resource_group.resource_group_id
+  plan                                    = "dedicated"
+  region                                  = var.region
+  resource_tags                           = var.resource_tags
+  access_tags                             = var.access_tags
+  dedicated_crypto_units                  = var.dedicated_crypto_units
+  dedicated_use_private_endpoint          = var.dedicated_use_private_endpoint
+  dedicated_signature_key_filepath        = var.dedicated_signature_key_filepath
+  dedicated_signature_key_passphrase      = var.dedicated_signature_key_passphrase
+  dedicated_signature_key_owner           = var.dedicated_signature_key_owner
+  dedicated_master_key_keyname            = var.dedicated_master_key_keyname
+  dedicated_master_key_share_1_filepath   = var.dedicated_master_key_share_1_filepath
+  dedicated_master_key_share_1_passphrase = var.dedicated_master_key_share_1_passphrase
+  dedicated_master_key_share_2_filepath   = var.dedicated_master_key_share_2_filepath
+  dedicated_master_key_share_2_passphrase = var.dedicated_master_key_share_2_passphrase
+  dedicated_master_key_share_3_filepath   = var.dedicated_master_key_share_3_filepath
+  dedicated_master_key_share_3_passphrase = var.dedicated_master_key_share_3_passphrase
 }

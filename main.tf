@@ -31,6 +31,45 @@ resource "ibm_resource_instance" "dedicated_key_protect_instance" {
   plan              = "dedicated"
   location          = var.region
   tags              = var.resource_tags
+  parameters = {
+    crypto_units = tostring(var.dedicated_crypto_units)
+  }
+}
+
+##############################################################################
+# Initialize Dedicated Key Protect Instance
+##############################################################################
+
+resource "ibm_kms_cryptounits" "dedicated_key_protect_initialization" {
+  count                = local.is_dedicated ? 1 : 0
+  instance_id          = ibm_resource_instance.dedicated_key_protect_instance[0].guid
+  region               = var.region
+  use_private_endpoint = var.dedicated_use_private_endpoint
+
+  signature_key {
+    filepath   = var.dedicated_signature_key_filepath
+    passphrase = var.dedicated_signature_key_passphrase
+    owner      = var.dedicated_signature_key_owner
+  }
+
+  master_key {
+    keysharefile {
+      filepath   = var.dedicated_master_key_share_1_filepath
+      passphrase = var.dedicated_master_key_share_1_passphrase
+    }
+    keysharefile {
+      filepath   = var.dedicated_master_key_share_2_filepath
+      passphrase = var.dedicated_master_key_share_2_passphrase
+    }
+    dynamic "keysharefile" {
+      for_each = var.dedicated_master_key_share_3_filepath != null ? [1] : []
+      content {
+        filepath   = var.dedicated_master_key_share_3_filepath
+        passphrase = var.dedicated_master_key_share_3_passphrase
+      }
+    }
+    keyname = var.dedicated_master_key_keyname
+  }
 }
 
 ##############################################################################
@@ -38,9 +77,10 @@ resource "ibm_resource_instance" "dedicated_key_protect_instance" {
 ##############################################################################
 
 resource "ibm_kms_instance_policies" "key_protect_instance_policies" {
-  count         = local.is_dedicated ? 0 : 1
-  instance_id   = ibm_resource_instance.key_protect_instance[0].guid
-  endpoint_type = var.allowed_network == "private-only" ? "private" : "public"
+  # For dedicated instances, wait for initialization to complete before applying policies.
+  depends_on    = [ibm_kms_cryptounits.dedicated_key_protect_initialization]
+  instance_id   = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].guid : ibm_resource_instance.key_protect_instance[0].guid
+  endpoint_type = local.is_dedicated ? "public" : (var.allowed_network == "private-only" ? "private" : "public")
   rotation {
     enabled        = var.rotation_enabled
     interval_month = var.rotation_enabled == true ? var.rotation_interval_month : null
@@ -65,12 +105,12 @@ locals {
   # instance policy output is not formatted correctly, cleanup done in this local
   # tracking in issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5163
   instance_policies = {
-    dual_auth_delete         = local.is_dedicated ? null : [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].dual_auth_delete : obj if obj != null]
-    id                       = local.is_dedicated ? null : ibm_kms_instance_policies.key_protect_instance_policies[0].id
-    instance_id              = local.is_dedicated ? null : ibm_kms_instance_policies.key_protect_instance_policies[0].instance_id
-    key_create_import_access = local.is_dedicated ? null : [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].key_create_import_access : obj if obj != null]
-    metrics                  = local.is_dedicated ? null : [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].metrics : obj if obj != null]
-    rotation                 = local.is_dedicated ? null : [for obj in ibm_kms_instance_policies.key_protect_instance_policies[0].rotation : obj if obj != null]
+    dual_auth_delete         = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.dual_auth_delete : obj if obj != null]
+    id                       = ibm_kms_instance_policies.key_protect_instance_policies.id
+    instance_id              = ibm_kms_instance_policies.key_protect_instance_policies.instance_id
+    key_create_import_access = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.key_create_import_access : obj if obj != null]
+    metrics                  = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.metrics : obj if obj != null]
+    rotation                 = [for obj in ibm_kms_instance_policies.key_protect_instance_policies.rotation : obj if obj != null]
   }
 }
 
