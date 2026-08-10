@@ -83,7 +83,7 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string) (sigKeyPath, mbk1Pat
 	apiKey := os.Getenv("TF_VAR_ibmcloud_api_key")
 	require.NotEmpty(t, apiKey, "TF_VAR_ibmcloud_api_key must be set")
 
-	loginCmd := exec.Command("ibmcloud", "login", "--apikey", apiKey, "--no-region") // #nosec G204 G702
+	loginCmd := exec.Command("ibmcloud", "login", "--apikey", apiKey, "-r", "us-south") // #nosec G204 G702
 	loginCmd.Stdout = os.Stdout
 	loginCmd.Stderr = os.Stderr
 	require.NoError(t, loginCmd.Run(), "ibmcloud login failed")
