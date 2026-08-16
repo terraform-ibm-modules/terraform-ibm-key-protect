@@ -2,7 +2,7 @@
 package test
 
 import (
-	// "context"
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	// "github.com/gruntwork-io/terratest/modules/logger"
-	// "github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
@@ -133,10 +133,12 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string) (
 	require.NoError(t, sigCmd.Run(), "ibmcloud kp sig-key generate failed")
 	t.Logf("Generated signature key: %s", sigKeyPath)
 
-	// 2. Generate master key shares (AES-256). The CLI validates --instance-id
-	//    even for local key generation, so the instance must exist first.
+	// 2. Generate master key shares (AES-256).
+	//    --auth provides the signature key for local authorisation of the operation.
+	//    --instance-id is required by the CLI plugin even for local key splitting.
 	mkCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "mk", "generate", // #nosec G204
 		"--instance-id", instanceID,
+		"--auth", sigKeyPath,
 		"--keyshare-files", fmt.Sprintf("[%q,%q]",
 			fmt.Sprintf("%s#%s", mbk1Path, dedicatedMBKPassphrase),
 			fmt.Sprintf("%s#%s", mbk2Path, dedicatedMBKPassphrase),
@@ -158,20 +160,26 @@ func TestRunDedicatedExample(t *testing.T) {
 
 	region := dedicatedRegions[common.CryptoIntn(len(dedicatedRegions))]
 
-	// Step 1: Provision the dedicated Key Protect instance.
-	// RunTestConsistency applies, asserts idempotency, then leaves the instance
-	// running so we can obtain its GUID for key generation below.
+	// Step 1: Apply examples/dedicated to provision the instance.
+	// We use TestSetup/TestTearDown directly (instead of RunTestConsistency) so
+	// the instance stays live after apply — we need its GUID for key generation.
+	// TestTearDown runs terraform destroy at the end, even on failure.
 	instanceOptions := setupOptionsDedicated(t, "kp-d", region)
-	instancePlan, err := instanceOptions.RunTestConsistency()
-	require.Nil(t, err, "Dedicated instance provisioning should not have errored")
-	require.NotNil(t, instancePlan, "Expected plan output from dedicated instance")
+	instanceOptions.TestSetup()
+	defer instanceOptions.TestTearDown()
 
-	instanceID, ok := instanceOptions.LastTestTerraformOutputs["key_protect_guid"].(string)
+	_, err := terraform.InitAndApplyContextE(t, context.Background(), instanceOptions.TerraformOptions)
+	require.Nil(t, err, "Dedicated instance provisioning should not have errored")
+
+	outputs, outputErr := terraform.OutputAllContextE(t, context.Background(), instanceOptions.TerraformOptions)
+	require.Nil(t, outputErr, "Failed to read outputs from dedicated instance")
+
+	instanceID, ok := outputs["key_protect_guid"].(string)
 	require.True(t, ok && instanceID != "", "key_protect_guid output must be a non-empty string")
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
 
 	// Step 2 & 3: Generate signature key and master key shares via IBM Cloud CLI.
-	// mk generate requires the instance GUID (validated locally by the CLI plugin).
+	// mk generate requires --auth (the signature key file) and --instance-id.
 	keyDir := t.TempDir()
 	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID)
 
