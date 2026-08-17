@@ -182,10 +182,11 @@ func TestRunDedicatedExample(t *testing.T) {
 	require.True(t, ok && instanceID != "", "key_protect_guid output must be a non-empty string")
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
 
-	// The dedicated HSM crypto units need a short settling period after the
-	// resource shows active before they can be queried by the CLI.
-	t.Log("Waiting 60s for crypto units to become queryable...")
-	time.Sleep(60 * time.Second)
+	// The dedicated HSM crypto units need a settling period after the resource
+	// reports active before they can be queried by the CLI. 3 minutes is
+	// conservative but reliable based on observed provisioning behaviour.
+	t.Log("Waiting 3m for crypto units to become queryable...")
+	time.Sleep(3 * time.Minute)
 
 	// Step 2 & 3: Generate signature key and master key shares via IBM Cloud CLI.
 	// mk generate requires --auth (the signature key file) and --instance-id.
