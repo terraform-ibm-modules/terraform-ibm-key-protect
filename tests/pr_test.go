@@ -8,7 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	// "github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -134,17 +136,31 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, r
 	t.Logf("Generated signature key: %s", sigKeyPath)
 
 	// 2. Claim the crypto units with the signature key.
-	//    This registers the admin credential on each HSM unit so that
-	//    subsequent commands (mk generate) can authenticate against them.
-	//    --ids is omitted so all crypto units on the instance are claimed.
-	claimCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "claim", // #nosec G204
-		"--instance-id", instanceID,
-		"--credential", sigKeyPath,
-	)
-	claimCmd.Stdout = os.Stdout
-	claimCmd.Stderr = os.Stderr
-	require.NoError(t, claimCmd.Run(), "ibmcloud kp crypto-unit claim failed")
-	t.Log("Claimed crypto units")
+	//    The crypto unit management plane takes time to register after the
+	//    resource reports active — retry with backoff until it succeeds (404 →
+	//    endpoint not ready yet) or we exhaust the timeout.
+	t.Log("Claiming crypto units (retrying until management plane is ready)...")
+	claimDeadline := time.Now().Add(10 * time.Minute)
+	for {
+		var claimOut strings.Builder
+		claimCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "claim", // #nosec G204
+			"--instance-id", instanceID,
+			"--credential", sigKeyPath,
+		)
+		claimCmd.Stdout = &claimOut
+		claimCmd.Stderr = &claimOut
+		claimErr := claimCmd.Run()
+		t.Log(claimOut.String())
+		if claimErr == nil {
+			t.Log("Claimed crypto units successfully")
+			break
+		}
+		if time.Now().After(claimDeadline) {
+			require.NoError(t, claimErr, "ibmcloud kp crypto-unit claim timed out after 10 minutes: "+claimOut.String())
+		}
+		t.Logf("Crypto unit management plane not ready yet (%s), retrying in 30s...", claimOut.String())
+		time.Sleep(30 * time.Second)
+	}
 
 	// 3. Generate master key shares (AES-256).
 	//    --auth format: '[{"<owner>": "<filepath>#<passphrase>"}]'
@@ -192,7 +208,6 @@ func TestRunDedicatedExample(t *testing.T) {
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
 
 	// Step 2, 3 & 4: Generate signature key, claim crypto units, generate master key shares.
-	// mk generate requires --auth (the signature key file) and --instance-id.
 	keyDir := t.TempDir()
 	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID, region)
 
