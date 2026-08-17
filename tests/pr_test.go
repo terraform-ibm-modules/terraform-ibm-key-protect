@@ -105,15 +105,17 @@ func setupOptionsDedicated(t *testing.T, prefix string, region string) *testhelp
 //
 // When ibm_kms_cryptounits runs apply it finds the files already on disk
 // (keyExists=true) and imports them into the HSM rather than generating new ones.
-func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string) (sigKeyPath, mbk1Path, mbk2Path string) {
+func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, region string) (sigKeyPath, mbk1Path, mbk2Path string) {
 	t.Helper()
 
 	// Log in to IBM Cloud using the API key that Terraform also uses.
 	// The ibmcloud CLI must be authenticated before any kp subcommands work.
+	// Must target the same region as the instance — mk generate queries crypto
+	// units from the regional endpoint.
 	apiKey := os.Getenv("TF_VAR_ibmcloud_api_key")
 	require.NotEmpty(t, apiKey, "TF_VAR_ibmcloud_api_key must be set")
 
-	loginCmd := exec.Command("ibmcloud", "login", "--apikey", apiKey, "-r", "us-south") // #nosec G204 G702
+	loginCmd := exec.Command("ibmcloud", "login", "--apikey", apiKey, "-r", region) // #nosec G204 G702
 	loginCmd.Stdout = os.Stdout
 	loginCmd.Stderr = os.Stderr
 	require.NoError(t, loginCmd.Run(), "ibmcloud login failed")
@@ -182,7 +184,7 @@ func TestRunDedicatedExample(t *testing.T) {
 	// Step 2 & 3: Generate signature key and master key shares via IBM Cloud CLI.
 	// mk generate requires --auth (the signature key file) and --instance-id.
 	keyDir := t.TempDir()
-	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID)
+	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID, region)
 
 	// Step 4: Initialize the dedicated instance using the kp-dedicated-initialization submodule.
 	initOptions := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
