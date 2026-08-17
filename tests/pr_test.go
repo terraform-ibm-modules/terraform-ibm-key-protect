@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
-	"time"
 
 	// "github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -94,12 +93,10 @@ func setupOptionsDedicated(t *testing.T, prefix string, region string) *testhelp
 	return options
 }
 
-// generateDedicatedKeyFiles uses the IBM Cloud CLI to generate real signature key
-// and master key share files locally.
-//
-//   - sig-key generate is purely local (no instance needed)
-//   - mk generate requires --instance-id for CLI validation, so the dedicated
-//     instance must be provisioned before calling this function
+// generateDedicatedKeyFiles uses the IBM Cloud CLI to:
+//  1. Generate an RSA-2048 admin signature key (local, no HSM needed)
+//  2. Claim the instance's crypto units with that key (registers the admin)
+//  3. Generate AES-256 master key shares (local split, auth against HSM)
 //
 // The generated files are written into keyDir and their absolute paths are
 // returned so Terraform can reference them directly.
@@ -136,9 +133,21 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, r
 	require.NoError(t, sigCmd.Run(), "ibmcloud kp sig-key generate failed")
 	t.Logf("Generated signature key: %s", sigKeyPath)
 
-	// 2. Generate master key shares (AES-256).
+	// 2. Claim the crypto units with the signature key.
+	//    This registers the admin credential on each HSM unit so that
+	//    subsequent commands (mk generate) can authenticate against them.
+	//    --ids is omitted so all crypto units on the instance are claimed.
+	claimCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "claim", // #nosec G204
+		"--instance-id", instanceID,
+		"--credential", sigKeyPath,
+	)
+	claimCmd.Stdout = os.Stdout
+	claimCmd.Stderr = os.Stderr
+	require.NoError(t, claimCmd.Run(), "ibmcloud kp crypto-unit claim failed")
+	t.Log("Claimed crypto units")
+
+	// 3. Generate master key shares (AES-256).
 	//    --auth format: '[{"<owner>": "<filepath>#<passphrase>"}]'
-	//    --instance-id is required by the CLI plugin even for local key splitting.
 	authJSON := fmt.Sprintf(`[{"ADMIN": "%s#%s"}]`, sigKeyPath, dedicatedSigKeyPassphrase)
 	mkCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "mk", "generate", // #nosec G204
 		"--instance-id", instanceID,
@@ -182,13 +191,7 @@ func TestRunDedicatedExample(t *testing.T) {
 	require.True(t, ok && instanceID != "", "key_protect_guid output must be a non-empty string")
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
 
-	// The dedicated HSM crypto units need a settling period after the resource
-	// reports active before they can be queried by the CLI. 3 minutes is
-	// conservative but reliable based on observed provisioning behaviour.
-	t.Log("Waiting 3m for crypto units to become queryable...")
-	time.Sleep(3 * time.Minute)
-
-	// Step 2 & 3: Generate signature key and master key shares via IBM Cloud CLI.
+	// Step 2, 3 & 4: Generate signature key, claim crypto units, generate master key shares.
 	// mk generate requires --auth (the signature key file) and --instance-id.
 	keyDir := t.TempDir()
 	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID, region)
