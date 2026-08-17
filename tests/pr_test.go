@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	// "github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -180,6 +181,11 @@ func TestRunDedicatedExample(t *testing.T) {
 	instanceID, ok := outputs["key_protect_guid"].(string)
 	require.True(t, ok && instanceID != "", "key_protect_guid output must be a non-empty string")
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
+
+	// The dedicated HSM crypto units need a short settling period after the
+	// resource shows active before they can be queried by the CLI.
+	t.Log("Waiting 60s for crypto units to become queryable...")
+	time.Sleep(60 * time.Second)
 
 	// Step 2 & 3: Generate signature key and master key shares via IBM Cloud CLI.
 	// mk generate requires --auth (the signature key file) and --instance-id.
