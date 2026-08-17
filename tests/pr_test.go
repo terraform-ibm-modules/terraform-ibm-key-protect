@@ -134,11 +134,11 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string) (
 	t.Logf("Generated signature key: %s", sigKeyPath)
 
 	// 2. Generate master key shares (AES-256).
-	//    --auth provides the signature key for local authorisation of the operation.
+	//    --auth expects a JSON array of signature key file paths.
 	//    --instance-id is required by the CLI plugin even for local key splitting.
 	mkCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "mk", "generate", // #nosec G204
 		"--instance-id", instanceID,
-		"--auth", sigKeyPath,
+		"--auth", fmt.Sprintf("[%q]", sigKeyPath),
 		"--keyshare-files", fmt.Sprintf("[%q,%q]",
 			fmt.Sprintf("%s#%s", mbk1Path, dedicatedMBKPassphrase),
 			fmt.Sprintf("%s#%s", mbk2Path, dedicatedMBKPassphrase),
