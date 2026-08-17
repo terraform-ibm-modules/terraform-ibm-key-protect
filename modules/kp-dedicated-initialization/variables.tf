@@ -2,6 +2,33 @@
 # Input Variables
 ##############################################################################
 
+# The following three variables are declared as stubs because the testhelper
+# wrapper (TestOptionsDefaultWithVars) automatically injects prefix,
+# resource_group, and resource_tags into every Terraform module it targets.
+# They are not used by this submodule but must be declared to avoid
+# "undeclared variable" errors during terraform plan/apply.
+
+# tflint-ignore: terraform_unused_declarations
+variable "prefix" {
+  type        = string
+  description = "Unused stub — injected automatically by the testhelper wrapper."
+  default     = null
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "resource_group" {
+  type        = string
+  description = "Unused stub — injected automatically by the testhelper wrapper."
+  default     = null
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "resource_tags" {
+  type        = list(string)
+  description = "Unused stub — injected automatically by the testhelper wrapper."
+  default     = []
+}
+
 variable "instance_id" {
   type        = string
   description = "The GUID of the dedicated Key Protect instance to initialize."
