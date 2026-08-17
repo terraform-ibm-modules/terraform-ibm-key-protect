@@ -8,9 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
-	"time"
 
 	// "github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -105,13 +103,10 @@ func setupOptionsDedicated(t *testing.T, prefix string, region string) *testhelp
 //
 // When ibm_kms_cryptounits runs apply it finds the files already on disk
 // (keyExists=true) and imports them into the HSM rather than generating new ones.
-func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, region string) (sigKeyPath, mbk1Path, mbk2Path string) {
+func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, region string, publicEndpoint string) (sigKeyPath, mbk1Path, mbk2Path string) {
 	t.Helper()
 
 	// Log in to IBM Cloud using the API key that Terraform also uses.
-	// The ibmcloud CLI must be authenticated before any kp subcommands work.
-	// Must target the same region as the instance — mk generate queries crypto
-	// units from the regional endpoint.
 	apiKey := os.Getenv("TF_VAR_ibmcloud_api_key")
 	require.NotEmpty(t, apiKey, "TF_VAR_ibmcloud_api_key must be set")
 
@@ -119,6 +114,12 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, r
 	loginCmd.Stdout = os.Stdout
 	loginCmd.Stderr = os.Stderr
 	require.NoError(t, loginCmd.Run(), "ibmcloud login failed")
+
+	// KP_PRIVATE_ADDR tells the kp CLI plugin to target the dedicated instance's
+	// own endpoint instead of the shared regional endpoint. Without this, all
+	// crypto-unit commands return 404 because the dedicated HSM management API
+	// is not served at the regional URL.
+	kpEnv := append(os.Environ(), "KP_PRIVATE_ADDR="+publicEndpoint, "KP_INSTANCE_ID="+instanceID) // #nosec G204
 
 	sigKeyPath = filepath.Join(keyDir, "kp-dedicated-signature.key")
 	mbk1Path = filepath.Join(keyDir, "kp-dedicated-mbk-1.key")
@@ -130,43 +131,26 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, r
 		"--passphrase", dedicatedSigKeyPassphrase,
 		"--algo", "RSA-2048",
 	)
+	sigCmd.Env = kpEnv
 	sigCmd.Stdout = os.Stdout
 	sigCmd.Stderr = os.Stderr
 	require.NoError(t, sigCmd.Run(), "ibmcloud kp sig-key generate failed")
 	t.Logf("Generated signature key: %s", sigKeyPath)
 
 	// 2. Claim the crypto units with the signature key.
-	//    The crypto unit management plane takes time to register after the
-	//    resource reports active — retry with backoff until it succeeds (404 →
-	//    endpoint not ready yet) or we exhaust the timeout.
-	t.Log("Claiming crypto units (retrying until management plane is ready)...")
-	claimDeadline := time.Now().Add(10 * time.Minute)
-	for {
-		var claimOut strings.Builder
-		claimCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "claim", // #nosec G204
-			"--instance-id", instanceID,
-			"--credential", sigKeyPath,
-		)
-		claimCmd.Stdout = &claimOut
-		claimCmd.Stderr = &claimOut
-		claimErr := claimCmd.Run()
-		t.Log(claimOut.String())
-		if claimErr == nil {
-			t.Log("Claimed crypto units successfully")
-			break
-		}
-		if time.Now().After(claimDeadline) {
-			require.NoError(t, claimErr, "ibmcloud kp crypto-unit claim timed out after 10 minutes: "+claimOut.String())
-		}
-		t.Logf("Crypto unit management plane not ready yet (%s), retrying in 30s...", claimOut.String())
-		time.Sleep(30 * time.Second)
-	}
+	claimCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "claim", // #nosec G204
+		"--credential", sigKeyPath,
+	)
+	claimCmd.Env = kpEnv
+	claimCmd.Stdout = os.Stdout
+	claimCmd.Stderr = os.Stderr
+	require.NoError(t, claimCmd.Run(), "ibmcloud kp crypto-unit claim failed")
+	t.Log("Claimed crypto units")
 
 	// 3. Generate master key shares (AES-256).
 	//    --auth format: '[{"<owner>": "<filepath>#<passphrase>"}]'
 	authJSON := fmt.Sprintf(`[{"ADMIN": "%s#%s"}]`, sigKeyPath, dedicatedSigKeyPassphrase)
 	mkCmd := exec.Command("ibmcloud", "kp", "crypto-unit", "mk", "generate", // #nosec G204
-		"--instance-id", instanceID,
 		"--auth", authJSON,
 		"--keyshare-files", fmt.Sprintf("[%q,%q]",
 			fmt.Sprintf("%s#%s", mbk1Path, dedicatedMBKPassphrase),
@@ -176,6 +160,7 @@ func generateDedicatedKeyFiles(t *testing.T, keyDir string, instanceID string, r
 		"--algo", "AES-256",
 		"--key-name", dedicatedMasterKeyName,
 	)
+	mkCmd.Env = kpEnv
 	mkCmd.Stdout = os.Stdout
 	mkCmd.Stderr = os.Stderr
 	require.NoError(t, mkCmd.Run(), "ibmcloud kp mk generate failed")
@@ -207,9 +192,12 @@ func TestRunDedicatedExample(t *testing.T) {
 	require.True(t, ok && instanceID != "", "key_protect_guid output must be a non-empty string")
 	t.Logf("Provisioned dedicated KP instance: %s", instanceID)
 
+	publicEndpoint, ok := outputs["kp_public_endpoint"].(string)
+	require.True(t, ok && publicEndpoint != "", "kp_public_endpoint output must be a non-empty string")
+
 	// Step 2, 3 & 4: Generate signature key, claim crypto units, generate master key shares.
 	keyDir := t.TempDir()
-	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID, region)
+	sigKeyPath, mbk1Path, mbk2Path := generateDedicatedKeyFiles(t, keyDir, instanceID, region, publicEndpoint)
 
 	// Step 4: Initialize the dedicated instance using the kp-dedicated-initialization submodule.
 	initOptions := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
