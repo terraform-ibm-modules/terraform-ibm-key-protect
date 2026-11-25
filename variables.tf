@@ -152,3 +152,9 @@ variable "cbr_rules" {
     error_message = "Only one CBR rule is allowed."
   }
 }
+
+variable "connector_name" {
+  type        = string
+  description = "connector_name"
+  default     = null
+}

@@ -33,6 +33,19 @@ resource "ibm_resource_instance" "dedicated_key_protect_instance" {
   tags              = var.resource_tags
 }
 
+resource "ibm_resource_instance" "hybrid_key_protect_instance" {
+  count             = local.is_hybrid ? 1 : 0
+  name              = var.key_protect_name
+  resource_group_id = var.resource_group_id
+  service           = "kms"
+  plan              = var.plan
+  location          = var.region
+  tags              = var.resource_tags
+  parameters = {
+    connector_name : var.connector_name
+  }
+}
+
 ##############################################################################
 # Create Instance Policies
 ##############################################################################
