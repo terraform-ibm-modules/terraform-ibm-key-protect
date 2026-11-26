@@ -56,11 +56,15 @@ variable "plan" {
         contains(["us-south", "eu-de", "jp-tok"], var.region)
       ) ||
 
-      (var.plan == "dedicated" &&
+      (var.plan == "dedicated" && var.connector_id == null &&
         contains(["us-south", "eu-de", "us-east"], var.region)
+      ) ||
+
+      (var.plan == "dedicated" && var.connector_id != null &&
+        contains(["us-south", "eu-gb"], var.region)
       )
     )
-    error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east."
+    error_message = "Invalid plan/region combination. 'cross-region-resiliency' supports: us-south, eu-de, jp-tok. 'dedicated' supports: us-south, eu-de, us-east, or us-south, eu-gb when `connector_id` is set (hybrid)."
   }
 }
 
@@ -151,4 +155,10 @@ variable "cbr_rules" {
     condition     = length(var.cbr_rules) <= 1
     error_message = "Only one CBR rule is allowed."
   }
+}
+
+variable "connector_id" {
+  type        = string
+  description = "connector_id"
+  default     = null
 }

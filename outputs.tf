@@ -3,27 +3,27 @@
 ##############################################################################
 
 output "key_protect_guid" {
-  value       = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].guid : ibm_resource_instance.key_protect_instance[0].guid
+  value       = local.is_dedicated ? local.dedicated_instance.guid : ibm_resource_instance.key_protect_instance[0].guid
   description = "GUID of the Key Protect instance"
 }
 
 output "key_protect_id" {
-  value       = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].id : ibm_resource_instance.key_protect_instance[0].id
+  value       = local.is_dedicated ? local.dedicated_instance.id : ibm_resource_instance.key_protect_instance[0].id
   description = "ID of the Key Protect instance"
 }
 
 output "key_protect_crn" {
-  value       = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].crn : ibm_resource_instance.key_protect_instance[0].crn
+  value       = local.is_dedicated ? local.dedicated_instance.crn : ibm_resource_instance.key_protect_instance[0].crn
   description = "CRN of the Key Protect instance"
 }
 
 output "key_protect_name" {
-  value       = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].name : ibm_resource_instance.key_protect_instance[0].name
+  value       = local.is_dedicated ? local.dedicated_instance.name : ibm_resource_instance.key_protect_instance[0].name
   description = "Name of the Key Protect instance"
 }
 
 output "key_protect_account_id" {
-  value       = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].account_id : ibm_resource_instance.key_protect_instance[0].account_id
+  value       = local.is_dedicated ? local.dedicated_instance.account_id : ibm_resource_instance.key_protect_instance[0].account_id
   description = "The account ID of the Key Protect instance."
 }
 

@@ -5,9 +5,13 @@
 locals {
   kp_endpoints = local.is_dedicated ? null : { for key, value in ibm_resource_instance.key_protect_instance[0].extensions : key => value
   }
-  kp_endpoints_dedicated = local.is_dedicated ? { for key, value in ibm_resource_instance.dedicated_key_protect_instance[0].extensions : key => value
+  kp_endpoints_dedicated = local.is_dedicated ? { for key, value in local.dedicated_instance.extensions : key => value
   } : null
   is_dedicated = var.plan == "dedicated"
+  # a dedicated plan with a connector_id is provisioned as a single-tenant-hybrid instance
+  is_hybrid = local.is_dedicated && var.connector_id != null
+  # the single dedicated or hybrid instance that exists for the selected plan (null for non-dedicated plans)
+  dedicated_instance = one(concat(ibm_resource_instance.dedicated_key_protect_instance, ibm_resource_instance.hybrid_key_protect_instance))
 }
 
 resource "ibm_resource_instance" "key_protect_instance" {
@@ -24,13 +28,26 @@ resource "ibm_resource_instance" "key_protect_instance" {
 }
 
 resource "ibm_resource_instance" "dedicated_key_protect_instance" {
-  count             = local.is_dedicated ? 1 : 0
+  count             = local.is_dedicated && !local.is_hybrid ? 1 : 0
   name              = var.key_protect_name
   resource_group_id = var.resource_group_id
   service           = "kms"
   plan              = "dedicated"
   location          = var.region
   tags              = var.resource_tags
+}
+
+resource "ibm_resource_instance" "hybrid_key_protect_instance" {
+  count             = local.is_hybrid ? 1 : 0
+  name              = var.key_protect_name
+  resource_group_id = var.resource_group_id
+  service           = "kms"
+  plan              = "dedicated"
+  location          = var.region
+  tags              = var.resource_tags
+  parameters = {
+    connector_id : var.connector_id
+  }
 }
 
 ##############################################################################
@@ -86,7 +103,7 @@ data "ibm_iam_access_tag" "access_tag" {
 resource "ibm_resource_tag" "key_protect_tag" {
   depends_on  = [data.ibm_iam_access_tag.access_tag] # Force dependency on data source validation to ensure access_tags exist and are valid before use.
   count       = length(var.access_tags) == 0 ? 0 : 1
-  resource_id = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].crn : ibm_resource_instance.key_protect_instance[0].crn
+  resource_id = local.is_dedicated ? local.dedicated_instance.crn : ibm_resource_instance.key_protect_instance[0].crn
   tags        = var.access_tags
   tag_type    = "access"
 }
@@ -123,7 +140,7 @@ module "cbr_rule" {
       },
       {
         name     = "serviceInstance"
-        value    = local.is_dedicated ? ibm_resource_instance.dedicated_key_protect_instance[0].guid : ibm_resource_instance.key_protect_instance[0].guid
+        value    = local.is_dedicated ? local.dedicated_instance.guid : ibm_resource_instance.key_protect_instance[0].guid
         operator = "stringEquals"
       },
       {

@@ -31,3 +31,9 @@ variable "access_tags" {
   description = "Optional list of access management tags to add to the Key Protect instance"
   default     = []
 }
+
+variable "connector_id" {
+  type        = string
+  description = "connector_id"
+  default     = null
+}
