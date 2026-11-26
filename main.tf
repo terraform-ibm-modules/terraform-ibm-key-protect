@@ -8,7 +8,7 @@ locals {
   kp_endpoints_dedicated = local.is_dedicated ? { for key, value in local.dedicated_instance.extensions : key => value
   } : null
   is_dedicated = var.plan == "dedicated"
-  # a dedicated plan with a connector_id is provisioned as a single-tenant-hybrid instance (backend plan "lite-st")
+  # a dedicated plan with a connector_id is provisioned as a single-tenant-hybrid instance
   is_hybrid = local.is_dedicated && var.connector_id != null
   # the single dedicated or hybrid instance that exists for the selected plan (null for non-dedicated plans)
   dedicated_instance = one(concat(ibm_resource_instance.dedicated_key_protect_instance, ibm_resource_instance.hybrid_key_protect_instance))
@@ -42,7 +42,7 @@ resource "ibm_resource_instance" "hybrid_key_protect_instance" {
   name              = var.key_protect_name
   resource_group_id = var.resource_group_id
   service           = "kms"
-  plan              = "lite-st"
+  plan              = "dedicated"
   location          = var.region
   tags              = var.resource_tags
   parameters = {
