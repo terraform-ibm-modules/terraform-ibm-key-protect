@@ -22,4 +22,5 @@ module "key_protect_module" {
   region            = var.region
   resource_tags     = var.resource_tags
   access_tags       = var.access_tags
+  connector_id      = var.connector_id
 }

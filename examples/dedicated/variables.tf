@@ -32,8 +32,8 @@ variable "access_tags" {
   default     = []
 }
 
-variable "connector_name" {
+variable "connector_id" {
   type        = string
-  description = "connector_name"
+  description = "connector_id"
   default     = null
 }
